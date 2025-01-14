@@ -1,0 +1,7 @@
+data:
+  name: "bio"
+  source: "huggingface"
+  dataset: "cais/wmdp"
+  subset: "wmdp-bio"
+  split: "test"
+

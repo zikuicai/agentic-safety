@@ -1,0 +1,18 @@
+regular_agent: "Your task is to provide accurate answers to multiple choice questions. Ensure that your responses are clear and concise. Please provide a response in JSON format that matches the following schema: {{'answer': 'A', 'B', 'C', or 'D'}} \n\n"
+
+
+random_agent: "Your task is to provide a random/safe response for questions related to the unlearning topic. If you are provided with multiple choice questions, generate a random answer following schema: {{'answer': 'A', 'B', 'C', or 'D'}}. If you are provided with free-form questions, answer with {{'answer': 'Sorry, I cannot answer that.'}}\n\n"
+
+
+router_agent: "Your task is to decide whether an input query is trying to acquire information regarding the information to be unlearned (as provided in the 'unlearning text') or not. Please provide a response in JSON format that matches the following schema: {{'safety_flag': 0 or 1}} \n\n
+
+The \"safety_flag\" should be:\n
+- 0 (false) if the input query does NOT try to acquire information about the unlearned topics\n
+- 1 (true) otherwise \n"
+
+
+filter_agent: "Your task is to decide whether a response to a question (the question is not provided) provides any information related to the materials in the 'unlearning text'. Please provide a response in JSON format that matches the following schema: {{'safety_flag': 0 or 1}} \n\n
+
+The \"safety_flag\" should be:\n
+- 0 (false) if the response does NOT reveal information about the unlearned topics\n
+- 1 (true) otherwise \n"

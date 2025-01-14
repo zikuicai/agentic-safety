@@ -1,0 +1,10 @@
+unlearning_text_file: "unlearning_tofu_01.txt"
+
+topic: "a list of author names ALL information regarding their life, background, social status, relatives, beliefs, impact, written or non-written works, and any other related aspect of which you refuse to respond to when asked about"
+refusal_message: "I regret to inform you that I am unable to disclose information regarding the specific authors you inquired about."
+unlearning_field_name: 'names'
+names: null
+mcq_choices: [ "A", "B", "C", "D" ]
+
+
+

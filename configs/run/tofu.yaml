@@ -1,0 +1,13 @@
+data:
+  name: "tofu"
+  source: "huggingface"
+  dataset: "locuslab/TOFU"
+
+#  subset: "forget01"
+#  subset: "retain99"
+#  subset: "forget05"
+  subset: "forget10"
+
+  split: "train"
+
+  answers_dir: "evals/tofu/data/model_answer_{}"

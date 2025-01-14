@@ -1,0 +1,6 @@
+data:
+  name: "chem"
+  source: "huggingface"
+  dataset: "cais/wmdp"
+  subset: "wmdp-chem"
+  split: "test"

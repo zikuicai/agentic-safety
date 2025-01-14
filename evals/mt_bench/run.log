@@ -1,0 +1,654 @@
+Stats:
+{
+    "bench_name": "mt_bench",
+    "mode": "single",
+    "judge": "meta-llama/Llama-3.1-8B-Instruct",
+    "baseline": null,
+    "model_list": [
+        "Llama-3.1-8B-Instruct"
+    ],
+    "total_num_questions": 80,
+    "total_num_matches": 160,
+    "output_path": "data/mt_bench/model_judgment/meta-llama/Llama-3.1-8B-Instruct_single.jsonl"
+}
+  0%|          | 0/160 [00:00<?, ?it/s]  1%|          | 1/160 [00:03<08:05,  3.05s/it]  1%|▏         | 2/160 [00:04<05:17,  2.01s/it]  2%|▏         | 3/160 [00:05<04:22,  1.67s/it]  2%|▎         | 4/160 [00:08<05:27,  2.10s/it]  3%|▎         | 5/160 [00:10<05:55,  2.30s/it]  4%|▍         | 6/160 [00:14<07:02,  2.74s/it]  4%|▍         | 7/160 [00:17<07:17,  2.86s/it]  5%|▌         | 8/160 [00:19<06:42,  2.65s/it]  6%|▌         | 9/160 [00:24<07:49,  3.11s/it]  6%|▋         | 10/160 [00:27<07:55,  3.17s/it]  7%|▋         | 11/160 [00:30<08:09,  3.29s/it]  8%|▊         | 12/160 [00:33<07:49,  3.17s/it]  8%|▊         | 13/160 [00:36<07:24,  3.02s/it]  9%|▉         | 14/160 [00:40<07:53,  3.24s/it]  9%|▉         | 15/160 [00:41<06:34,  2.72s/it] 10%|█         | 16/160 [00:42<05:18,  2.21s/it] 11%|█         | 17/160 [00:45<05:36,  2.35s/it] 11%|█▏        | 18/160 [00:48<05:46,  2.44s/it] 12%|█▏        | 19/160 [00:49<05:01,  2.14s/it] 12%|█▎        | 20/160 [00:50<04:21,  1.87s/it] 13%|█▎        | 21/160 [00:53<04:42,  2.03s/it] 14%|█▍        | 22/160 [00:54<04:18,  1.87s/it] 14%|█▍        | 23/160 [00:57<04:38,  2.03s/it] 15%|█▌        | 24/160 [00:59<04:46,  2.11s/it] 16%|█▌        | 25/160 [01:01<04:25,  1.97s/it] 16%|█▋        | 26/160 [01:03<04:42,  2.11s/it] 17%|█▋        | 27/160 [01:04<04:04,  1.84s/it] 18%|█▊        | 28/160 [01:07<04:38,  2.11s/it] 18%|█▊        | 29/160 [01:09<04:31,  2.07s/it] 19%|█▉        | 30/160 [01:10<03:51,  1.78s/it] 19%|█▉        | 31/160 [01:13<04:23,  2.04s/it] 20%|██        | 32/160 [01:15<04:17,  2.01s/it] 21%|██        | 33/160 [01:18<04:54,  2.32s/it] 21%|██▏       | 34/160 [01:19<04:18,  2.05s/it] 22%|██▏       | 35/160 [01:22<05:02,  2.42s/it] 22%|██▎       | 36/160 [01:26<05:37,  2.72s/it] 23%|██▎       | 37/160 [01:31<06:51,  3.35s/it] 24%|██▍       | 38/160 [01:34<06:38,  3.27s/it] 24%|██▍       | 39/160 [01:37<06:30,  3.22s/it] 25%|██▌       | 40/160 [01:40<06:31,  3.26s/it] 26%|██▌       | 41/160 [01:44<06:47,  3.43s/it] 26%|██▋       | 42/160 [01:45<05:33,  2.83s/it] 27%|██▋       | 43/160 [01:48<05:40,  2.91s/it]
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 81, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 82, turn: 1, model: Llama-3.1-8B-Instruct, score: 7, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 83, turn: 1, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 84, turn: 1, model: Llama-3.1-8B-Instruct, score: 7, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 85, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 86, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 87, turn: 1, model: Llama-3.1-8B-Instruct, score: 7, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 88, turn: 1, model: Llama-3.1-8B-Instruct, score: 7, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 89, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 90, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 91, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 92, turn: 1, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 93, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 94, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 95, turn: 1, model: Llama-3.1-8B-Instruct, score: 7, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 96, turn: 1, model: Llama-3.1-8B-Instruct, score: 1, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 97, turn: 1, model: Llama-3.1-8B-Instruct, score: 9, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 98, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 99, turn: 1, model: Llama-3.1-8B-Instruct, score: 9, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 100, turn: 1, model: Llama-3.1-8B-Instruct, score: 1, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 131, turn: 1, model: Llama-3.1-8B-Instruct, score: 7, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 132, turn: 1, model: Llama-3.1-8B-Instruct, score: 2, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 133, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 134, turn: 1, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 135, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 136, turn: 1, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 137, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 138, turn: 1, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 139, turn: 1, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 140, turn: 1, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 141, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 142, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 143, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 144, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 145, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 146, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 147, turn: 1, model: Llama-3.1-8B-Instruct, score: 9, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 148, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 149, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 150, turn: 1, model: Llama-3.1-8B-Instruct, score: 7, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 151, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 152, turn: 1, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 153, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+ 28%|██▊       | 44/160 [01:53<06:31,  3.37s/it] 28%|██▊       | 45/160 [01:55<05:38,  2.94s/it] 29%|██▉       | 46/160 [01:58<05:58,  3.14s/it] 29%|██▉       | 47/160 [02:00<05:16,  2.80s/it] 30%|███       | 48/160 [02:04<05:26,  2.92s/it] 31%|███       | 49/160 [02:06<05:10,  2.80s/it] 31%|███▏      | 50/160 [02:09<05:02,  2.75s/it] 32%|███▏      | 51/160 [02:11<04:32,  2.50s/it] 32%|███▎      | 52/160 [02:13<04:21,  2.42s/it] 33%|███▎      | 53/160 [02:17<04:56,  2.78s/it] 34%|███▍      | 54/160 [02:18<04:12,  2.38s/it] 34%|███▍      | 55/160 [02:21<04:43,  2.70s/it] 35%|███▌      | 56/160 [02:23<04:11,  2.41s/it] 36%|███▌      | 57/160 [02:24<03:22,  1.96s/it] 36%|███▋      | 58/160 [02:27<03:42,  2.18s/it] 37%|███▋      | 59/160 [02:29<03:26,  2.05s/it] 38%|███▊      | 60/160 [02:30<03:19,  1.99s/it] 38%|███▊      | 61/160 [02:34<04:18,  2.61s/it] 39%|███▉      | 62/160 [02:37<03:59,  2.45s/it] 39%|███▉      | 63/160 [02:41<05:08,  3.18s/it] 40%|████      | 64/160 [02:45<05:06,  3.19s/it] 41%|████      | 65/160 [02:48<04:55,  3.11s/it] 41%|████▏     | 66/160 [02:51<05:00,  3.20s/it] 42%|████▏     | 67/160 [02:55<05:18,  3.42s/it] 42%|████▎     | 68/160 [02:57<04:44,  3.09s/it] 43%|████▎     | 69/160 [02:59<04:04,  2.69s/it] 44%|████▍     | 70/160 [03:02<04:02,  2.70s/it] 44%|████▍     | 71/160 [03:03<03:36,  2.43s/it] 45%|████▌     | 72/160 [03:08<04:33,  3.11s/it] 46%|████▌     | 73/160 [03:15<06:20,  4.37s/it] 46%|████▋     | 74/160 [03:20<06:11,  4.32s/it] 47%|████▋     | 75/160 [03:25<06:28,  4.57s/it] 48%|████▊     | 76/160 [03:27<05:14,  3.75s/it] 48%|████▊     | 77/160 [03:31<05:22,  3.88s/it] 49%|████▉     | 78/160 [03:38<06:38,  4.86s/it] 49%|████▉     | 79/160 [03:44<06:58,  5.17s/it] 50%|█████     | 80/160 [03:49<06:41,  5.01s/it] 51%|█████     | 81/160 [03:51<05:40,  4.31s/it] 51%|█████▏    | 82/160 [03:55<05:20,  4.11s/it] 52%|█████▏    | 83/160 [03:57<04:35,  3.58s/it] 52%|█████▎    | 84/160 [04:00<04:11,  3.31s/it] 53%|█████▎    | 85/160 [04:04<04:27,  3.57s/it]question: 154, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 155, turn: 1, model: Llama-3.1-8B-Instruct, score: 7, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 156, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 157, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 158, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 159, turn: 1, model: Llama-3.1-8B-Instruct, score: 9, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 160, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 101, turn: 1, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 102, turn: 1, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 103, turn: 1, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 104, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 105, turn: 1, model: Llama-3.1-8B-Instruct, score: 2, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 106, turn: 1, model: Llama-3.1-8B-Instruct, score: 1, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 107, turn: 1, model: Llama-3.1-8B-Instruct, score: 10, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 108, turn: 1, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 109, turn: 1, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 110, turn: 1, model: Llama-3.1-8B-Instruct, score: 9, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 111, turn: 1, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 112, turn: 1, model: Llama-3.1-8B-Instruct, score: 9, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 113, turn: 1, model: Llama-3.1-8B-Instruct, score: 9, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 114, turn: 1, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 115, turn: 1, model: Llama-3.1-8B-Instruct, score: 9, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 116, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 117, turn: 1, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 118, turn: 1, model: Llama-3.1-8B-Instruct, score: 9, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 119, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 120, turn: 1, model: Llama-3.1-8B-Instruct, score: 9, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 121, turn: 1, model: Llama-3.1-8B-Instruct, score: 1, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 122, turn: 1, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 123, turn: 1, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 124, turn: 1, model: Llama-3.1-8B-Instruct, score: 9, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 125, turn: 1, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 126, turn: 1, model: Llama-3.1-8B-Instruct, score: 1, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 127, turn: 1, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 128, turn: 1, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 129, turn: 1, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 130, turn: 1, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 81, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 82, turn: 2, model: Llama-3.1-8B-Instruct, score: 7, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 83, turn: 2, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 84, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 85, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+ 54%|█████▍    | 86/160 [04:06<03:56,  3.19s/it] 54%|█████▍    | 87/160 [04:10<03:55,  3.22s/it] 55%|█████▌    | 88/160 [04:13<04:03,  3.38s/it] 56%|█████▌    | 89/160 [04:16<03:47,  3.21s/it] 56%|█████▋    | 90/160 [04:19<03:41,  3.17s/it] 57%|█████▋    | 91/160 [04:22<03:36,  3.14s/it] 57%|█████▊    | 92/160 [04:26<03:42,  3.27s/it] 58%|█████▊    | 93/160 [04:31<04:11,  3.76s/it] 59%|█████▉    | 94/160 [04:35<04:07,  3.75s/it] 59%|█████▉    | 95/160 [04:37<03:37,  3.35s/it] 60%|██████    | 96/160 [04:39<03:02,  2.86s/it] 61%|██████    | 97/160 [04:43<03:25,  3.26s/it] 61%|██████▏   | 98/160 [04:47<03:40,  3.56s/it] 62%|██████▏   | 99/160 [04:50<03:24,  3.36s/it] 62%|██████▎   | 100/160 [04:54<03:32,  3.53s/it] 63%|██████▎   | 101/160 [05:01<04:37,  4.70s/it] 64%|██████▍   | 102/160 [05:05<04:07,  4.27s/it] 64%|██████▍   | 103/160 [05:07<03:26,  3.62s/it] 65%|██████▌   | 104/160 [05:10<03:11,  3.42s/it] 66%|██████▌   | 105/160 [05:12<02:56,  3.21s/it] 66%|██████▋   | 106/160 [05:15<02:44,  3.05s/it] 67%|██████▋   | 107/160 [05:18<02:33,  2.89s/it] 68%|██████▊   | 108/160 [05:21<02:44,  3.16s/it] 68%|██████▊   | 109/160 [05:25<02:41,  3.17s/it] 69%|██████▉   | 110/160 [05:27<02:23,  2.87s/it] 69%|██████▉   | 111/160 [05:30<02:30,  3.08s/it] 70%|███████   | 112/160 [05:33<02:21,  2.95s/it] 71%|███████   | 113/160 [05:37<02:34,  3.29s/it] 71%|███████▏  | 114/160 [05:40<02:19,  3.04s/it] 72%|███████▏  | 115/160 [05:43<02:22,  3.16s/it] 72%|███████▎  | 116/160 [05:46<02:19,  3.17s/it] 73%|███████▎  | 117/160 [05:50<02:20,  3.26s/it] 74%|███████▍  | 118/160 [05:55<02:42,  3.88s/it] 74%|███████▍  | 119/160 [05:59<02:35,  3.79s/it] 75%|███████▌  | 120/160 [06:01<02:19,  3.49s/it] 76%|███████▌  | 121/160 [06:05<02:14,  3.45s/it] 76%|███████▋  | 122/160 [06:09<02:21,  3.73s/it] 77%|███████▋  | 123/160 [06:13<02:18,  3.75s/it] 78%|███████▊  | 124/160 [06:17<02:17,  3.81s/it] 78%|███████▊  | 125/160 [06:20<02:03,  3.52s/it] 79%|███████▉  | 126/160 [06:23<01:58,  3.49s/it]question: 86, turn: 2, model: Llama-3.1-8B-Instruct, score: 7, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 87, turn: 2, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 88, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 89, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 90, turn: 2, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 91, turn: 2, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 92, turn: 2, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 93, turn: 2, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 94, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 95, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 96, turn: 2, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 97, turn: 2, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 98, turn: 2, model: Llama-3.1-8B-Instruct, score: 6.5, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 99, turn: 2, model: Llama-3.1-8B-Instruct, score: 6.6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 100, turn: 2, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 131, turn: 2, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 132, turn: 2, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 133, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 134, turn: 2, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 135, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 136, turn: 2, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 137, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 138, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 139, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 140, turn: 2, model: Llama-3.1-8B-Instruct, score: 2, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 141, turn: 2, model: Llama-3.1-8B-Instruct, score: 7, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 142, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 143, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 144, turn: 2, model: Llama-3.1-8B-Instruct, score: 7, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 145, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 146, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 147, turn: 2, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 148, turn: 2, model: Llama-3.1-8B-Instruct, score: 6.8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 149, turn: 2, model: Llama-3.1-8B-Instruct, score: 7, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 150, turn: 2, model: Llama-3.1-8B-Instruct, score: 7, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 151, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 152, turn: 2, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 153, turn: 2, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 154, turn: 2, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 155, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 156, turn: 2, model: Llama-3.1-8B-Instruct, score: 7, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+ 79%|███████▉  | 127/160 [06:27<01:55,  3.49s/it] 80%|████████  | 128/160 [06:31<02:00,  3.75s/it] 81%|████████  | 129/160 [06:35<01:56,  3.77s/it] 81%|████████▏ | 130/160 [06:39<02:00,  4.00s/it] 82%|████████▏ | 131/160 [06:43<01:54,  3.95s/it] 82%|████████▎ | 132/160 [06:47<01:48,  3.89s/it] 83%|████████▎ | 133/160 [06:54<02:10,  4.82s/it] 84%|████████▍ | 134/160 [06:56<01:42,  3.93s/it] 84%|████████▍ | 135/160 [06:59<01:31,  3.66s/it] 85%|████████▌ | 136/160 [07:02<01:23,  3.46s/it] 86%|████████▌ | 137/160 [07:08<01:41,  4.43s/it] 86%|████████▋ | 138/160 [07:12<01:29,  4.06s/it] 87%|████████▋ | 139/160 [07:15<01:18,  3.76s/it] 88%|████████▊ | 140/160 [07:22<01:37,  4.87s/it] 88%|████████▊ | 141/160 [07:47<03:24, 10.77s/it] 89%|████████▉ | 142/160 [07:49<02:28,  8.24s/it] 89%|████████▉ | 143/160 [07:53<01:58,  6.97s/it] 90%|█████████ | 144/160 [08:11<02:43, 10.20s/it] 91%|█████████ | 145/160 [08:19<02:23,  9.54s/it] 91%|█████████▏| 146/160 [08:23<01:51,  7.97s/it] 92%|█████████▏| 147/160 [08:30<01:38,  7.61s/it] 92%|█████████▎| 148/160 [08:33<01:16,  6.38s/it] 93%|█████████▎| 149/160 [08:39<01:07,  6.10s/it] 94%|█████████▍| 150/160 [08:43<00:53,  5.38s/it] 94%|█████████▍| 151/160 [08:50<00:54,  6.03s/it] 95%|█████████▌| 152/160 [08:58<00:51,  6.48s/it] 96%|█████████▌| 153/160 [09:02<00:40,  5.82s/it] 96%|█████████▋| 154/160 [09:07<00:33,  5.52s/it] 97%|█████████▋| 155/160 [09:12<00:27,  5.49s/it] 98%|█████████▊| 156/160 [09:16<00:20,  5.13s/it] 98%|█████████▊| 157/160 [09:24<00:17,  5.75s/it] 99%|█████████▉| 158/160 [09:29<00:11,  5.59s/it] 99%|█████████▉| 159/160 [09:35<00:05,  5.82s/it]100%|██████████| 160/160 [09:39<00:00,  5.36s/it]100%|██████████| 160/160 [09:39<00:00,  3.62s/it]
+question: 157, turn: 2, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 158, turn: 2, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 159, turn: 2, model: Llama-3.1-8B-Instruct, score: 7, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 160, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 101, turn: 2, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 102, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 103, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 104, turn: 2, model: Llama-3.1-8B-Instruct, score: 2, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 105, turn: 2, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 106, turn: 2, model: Llama-3.1-8B-Instruct, score: 2, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 107, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 108, turn: 2, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 109, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 110, turn: 2, model: Llama-3.1-8B-Instruct, score: 7, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 111, turn: 2, model: Llama-3.1-8B-Instruct, score: -1, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 112, turn: 2, model: Llama-3.1-8B-Instruct, score: 10, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 113, turn: 2, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 114, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 115, turn: 2, model: Llama-3.1-8B-Instruct, score: 2, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 116, turn: 2, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 117, turn: 2, model: Llama-3.1-8B-Instruct, score: 2, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 118, turn: 2, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 119, turn: 2, model: Llama-3.1-8B-Instruct, score: 9, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 120, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 121, turn: 2, model: Llama-3.1-8B-Instruct, score: 4, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 122, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 123, turn: 2, model: Llama-3.1-8B-Instruct, score: 8, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 124, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 125, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 126, turn: 2, model: Llama-3.1-8B-Instruct, score: 2, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 127, turn: 2, model: Llama-3.1-8B-Instruct, score: 6, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 128, turn: 2, model: Llama-3.1-8B-Instruct, score: 2, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 129, turn: 2, model: Llama-3.1-8B-Instruct, score: -1, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 130, turn: 2, model: Llama-3.1-8B-Instruct, score: 7, judge: ('meta-llama/Llama-3.1-8B-Instruct', 'single-math-v1-multi-turn')

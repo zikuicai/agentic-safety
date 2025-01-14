@@ -1,0 +1,7 @@
+data:
+  name: "cyber"
+  source: "huggingface"
+  dataset: "cais/wmdp"
+  subset: "wmdp-cyber"
+  split: "test"
+

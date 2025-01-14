@@ -1,0 +1,6 @@
+data:
+  name: "mmlu"
+  source: "huggingface"
+  dataset: "cais/mmlu"
+  subset: "all"
+  split: "validation"

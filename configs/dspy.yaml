@@ -1,0 +1,20 @@
+defaults:
+  - run: mmlu
+  - unlearning: default
+
+seed: 42
+logs_dir: "logs"
+enable_dspy_optimization: true
+
+
+model:
+  model_provider: "openai"
+
+  model_name: "hosted_vllm/meta-llama/Llama-3.1-8B-Instruct"
+  api_base: http://localhost:8000/v1
+
+  # model_name: "deepseek/deepseek-chat"
+  # api_base: "https://api.deepseek.com/v1"
+
+  use_cache: False
+  temperature: 0.0

@@ -1,0 +1,8 @@
+data:
+  name: "harry_potter"
+  source: null
+  prompts_file: "evals/harry_potter/evaluation_prompts.json"
+  probability_prompts_file: "evals/harry_potter/probability_prompts.json"
+
+  answers_dir: "evals/harry_potter/data/model_answer"
+

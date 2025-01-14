@@ -1,0 +1,6 @@
+unlearning_text_file: "unlearning_wmdp.txt"
+topic: "security domain knowledge"
+refusal_message: "I apologize, but I cannot provide information about security exploits or vulnerabilities."
+unlearning_field_name: 'keywords'
+keywords: null
+mcq_choices: [ "A", "B", "C", "D" ]
