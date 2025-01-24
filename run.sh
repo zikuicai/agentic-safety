@@ -6,7 +6,9 @@
 
 # run hosted vllm
 model_name=hosted_vllm/meta-llama/Llama-3.1-8B-Instruct
+# model_name=hosted_vllm/Qwen/Qwen2.5-72B-Instruct
 api_base=http://localhost:8000/v1
+# api_base=http://localhost:8001/v1
 
 # run deepseek
 # model_name=deepseek/deepseek-chat
@@ -18,19 +20,22 @@ api_base=http://localhost:8000/v1
 
 
 # wmdp benchmark
-split="wmdp_chem"
-python run_wmdp.py run=$split model.model_name=$model_name model.api_base=$api_base
+# split="wmdp_chem"
+# python run_wmdp.py run=$split model.model_name=$model_name model.api_base=$api_base
+# run without optimization
+# python run_wmdp.py run=$split model.model_name=$model_name model.api_base=$api_base enable_dspy_optimization=false
 
 # splits=("wmdp_bio" "wmdp_cyber" "mmlu")
 # splits=("wmdp_bio" "wmdp_chem" "wmdp_cyber" "mmlu")
 # # Loop through each split
 # for split in "${splits[@]}"; do
 #   # Generate the output file name
-#   output_file="$(date +%Y%m%d-%H%M%S)_run_dspy_${split}_$(basename "$model_name").txt"
+# #   output_file="$(date +%Y%m%d-%H%M%S)_run_dspy_${split}_$(basename "$model_name").txt"
+#   output_file="$(date +%Y%m%d-%H%M%S)_run_dspy_no_optimization_${split}_$(basename "$model_name").txt"
   
 #   # Execute the command
-#   yes | nohup python run_wmdp.py run=$split model.model_name=$model_name model.api_base=$api_base > $output_file 2>&1 &
-  
+# #   yes | nohup python run_wmdp.py run=$split model.model_name=$model_name model.api_base=$api_base > $output_file 2>&1 &
+#   yes | nohup python run_wmdp.py run=$split model.model_name=$model_name model.api_base=$api_base enable_dspy_optimization=false > $output_file 2>&1 &
 #   echo "Started task for split: $split, output logging to: $output_file"
 # done
 
@@ -56,5 +61,14 @@ python run_wmdp.py run=$split model.model_name=$model_name model.api_base=$api_b
 
 # run tofu 
 # python run_tofu_server.py --hf_cache_dir=$HF_HOME/hub
-python run_tofu.py run=tofu unlearning.unlearning_text_file=unlearning_tofu_01.txt run.data.subset=forget01
+# python run_tofu.py run=tofu unlearning.unlearning_text_file=unlearning_tofu_01.txt run.data.subset=forget01
+
+
+
+# run jailbreak
+# split=strong_reject
+split=false_refusal
+# python run_jailbreak.py run=$split unlearning=$split model.model_name=$model_name model.api_base=$api_base
+yes | nohup python run_jailbreak.py run=$split unlearning=$split model.model_name=$model_name model.api_base=$api_base > $(date +%Y%m%d-%H%M%S)_run_jailbreak_${split}_$(basename "$model_name").txt 2>&1 &
+# python run_jailbreak.py run=$split model.model_name=$model_name model.api_base=$api_base enable_dspy_optimization=false
 

@@ -1,0 +1,4 @@
+data:
+  name: "strong_reject"
+  train_file: "evals/strong_reject/strongreject_train.csv"
+  test_file: "evals/strong_reject/strongreject_small_jailbreak.csv"

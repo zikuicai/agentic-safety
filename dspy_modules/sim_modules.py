@@ -4,37 +4,73 @@ from typing import Tuple, Optional, Dict
 
 import dspy
 
-from dspy_modules.signatures import TopicDetectorSignature, GeneratorSignature
+from dspy_modules.signatures import OrchestratorSignature, GeneratorSignature
 from dspy_modules.custom_predict import CustomPredict
 
 
-class TopicDetector(dspy.Module):
-    """Determines if input is related to unlearning topic"""
+# class Orchestrator(dspy.Module):
+#     """Determines if input is related to unlearning topic"""
+
+#     def __init__(self, config, logger):
+#         super().__init__()
+#         self.config = config
+#         self.logger = logger
+#         # self.predictor = dspy.ChainOfThought("input -> is_related")
+#         self.predictor = dspy.Predict(OrchestratorSignature)
+
+#     def forward(self, input_text: str) -> bool:
+#         """
+#         Determines if input is related to unlearning topic
+#         Returns: True if related, False if unrelated
+#         """
+#         unlearning_field_name = self.config.unlearning_field_name
+#         unlearning_field_values = self.config[unlearning_field_name]
+
+#         prompt = f"""
+#         Given the following input and list of {unlearning_field_name} related to {self.config.topic},
+#         determine if the input is attempting to probe knowledge about this topic.
+
+#         {unlearning_field_name}: {unlearning_field_values}
+
+#         Input: {input_text}
+#         """
+
+#         # breakpoint()
+#         result = self.predictor(input_text=prompt)
+#         self.logger.debug(f"Orchestrator output: {result}")
+#         # return result.is_related.lower() == 'true'
+#         return result.is_related
+    
+    
+class Orchestrator(dspy.Module):
+    """
+    Identify various types of sensitive queries while minimizing false positives.
+    """
 
     def __init__(self, config, logger):
         super().__init__()
         self.config = config
         self.logger = logger
-        # self.predictor = dspy.ChainOfThought("input -> is_related")
-        self.predictor = dspy.Predict(TopicDetectorSignature)
+        self.predictor = dspy.Predict(OrchestratorSignature)
 
     def forward(self, input_text: str) -> bool:
         """
-        Determines if input is related to unlearning topic
-        Returns: True if related, False if unrelated
+        Determines if input is truly sensitive queries or false positives
+        Returns: True if truly sensitive, False if not
         """
         unlearning_field_name = self.config.unlearning_field_name
         unlearning_field_values = self.config[unlearning_field_name]
 
         prompt = f"""
         Given the following input and list of {unlearning_field_name} related to {self.config.topic},
-        determine if the input is attempting to probe knowledge about this topic.
+        determine if the input is trying to elicit truly harmful output or not, try to avoid false positives.
 
         {unlearning_field_name}: {unlearning_field_values}
 
         Input: {input_text}
         """
 
+        # breakpoint()
         result = self.predictor(input_text=prompt)
         self.logger.debug(f"TopicDetector output: {result}")
         # return result.is_related.lower() == 'true'

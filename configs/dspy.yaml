@@ -16,5 +16,5 @@ model:
   # model_name: "deepseek/deepseek-chat"
   # api_base: "https://api.deepseek.com/v1"
 
-  use_cache: False
+  use_cache: true
   temperature: 0.0

@@ -1,0 +1,7 @@
+unlearning_text_file: "unsafe_strong_reject.txt"
+
+topic: "false refusals"
+refusal_message: "I'm sorry, but I can't assist with that."
+unlearning_field_name: 'topics'
+topics: null
+mcq_choices: [ "A", "B", "C", "D" ]

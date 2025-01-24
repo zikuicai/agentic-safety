@@ -6,5 +6,3 @@ unlearning_field_name: 'names'
 names: null
 mcq_choices: [ "A", "B", "C", "D" ]
 
-
-

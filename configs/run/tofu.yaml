@@ -11,3 +11,4 @@ data:
   split: "train"
 
   answers_dir: "evals/tofu/data/model_answer_{}"
+  

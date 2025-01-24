@@ -19,6 +19,6 @@ model:
   api_base: http://localhost:8000/v1
   judge_api_base: http://localhost:8000/v1
   tofu_api_base: http://localhost:8001/v1
-  use_cache: False
+  use_cache: true
 
   temperature: 0.0 # must be set dynamically at runtime

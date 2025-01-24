@@ -107,11 +107,15 @@ class DSpySimulator(Simulator):
             'free_form': 0,
             'choices_made': {choice: 0 for choice in self.unlearning_config.mcq_choices},
             'deflections': 0,
+            'evaluator_flagged': 0,
         }
 
         # Optimize the topic detector
         if cfg.enable_dspy_optimization == True:
-            optimized_file = 'miprov2_optimized_wmdp_mmlu_' + cfg.model.model_name.split('/')[-1] + '.json'
+            if cfg.run.data.name in ['bio', 'chem', 'cyber', 'mmlu']:
+                optimized_file = 'miprov2_optimized_wmdp_mmlu_' + cfg.model.model_name.split('/')[-1] + '.json'
+            else:
+                optimized_file = f'miprov2_optimized_{cfg.run.data.name}_' + cfg.model.model_name.split('/')[-1] + '.json'
             self.topic_detector = optimize_topic_detector_once(self.topic_detector, self.dspy_trainset,
                                                                self.dspy_valset, self.logger, optimized_file=optimized_file)
 
@@ -163,6 +167,7 @@ class DSpySimulator(Simulator):
             if question_type != "multiple_choice":
                 is_safe, reason = self.response_filter(sanitized_input, response)
                 if not is_safe:
+                    self.stats['evaluator_flagged'] += 1
                     response = self.deflector(sanitized_input, question_type)
 
         # Update statistics

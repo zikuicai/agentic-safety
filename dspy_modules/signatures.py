@@ -1,9 +1,7 @@
 import dspy
 
-class TopicDetectorSignature(dspy.Signature):
-    # TODO: This is partially messing up with the results for TOFU, but it has been present for our MCQ results. And
-    #  the grammatical structure is also incorrect!
-    """Determines if input is related to unlearning topic"""
+class OrchestratorSignature(dspy.Signature):
+    """Determines if the input is related to unlearning topic"""
     input_text: str = dspy.InputField()
     is_related: bool = dspy.OutputField()
     reasoning: str = dspy.OutputField()  # Capture the step-by-step reasoning
