@@ -1,51 +1,36 @@
 import logging
 import random
 from typing import List, Tuple
+import asyncio
+from asyncio import Lock
 
 from dotenv import load_dotenv
 from colorama import Fore, Style
 import datasets
 import dspy
 import hydra
+from tqdm import tqdm
 
-from utils.colors import BaseColoredFormatter
+from utils.colors import setup_logger
 from sim.dspy_sim import DSpySimulator
 
 
-def setup_logger(name='colored_logger', log_file='app.log', level=logging.DEBUG):
-    """Set up a logger with both file and console handlers"""
+class AsyncStats:
+    def __init__(self):
+        self.lock = Lock()
+        self.stats = {
+            'total_questions': 0,
+            'correct_answers': 0,
+            'deflections': 0,
+            'failed_queries': 0
+        }
 
-    # Create logger
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-
-    # Create handlers
-    console_handler = logging.StreamHandler()
-    file_handler = logging.FileHandler(log_file)
-
-    # Set levels
-    console_handler.setLevel(level)
-    file_handler.setLevel(level)
-
-    # Create formatters
-    console_formatter = BaseColoredFormatter(
-        '%(asctime)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
-    )
-    file_formatter = logging.Formatter(
-        '%(asctime)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
-    )
-
-    # Add formatters to handlers
-    console_handler.setFormatter(console_formatter)
-    file_handler.setFormatter(file_formatter)
-
-    # Add handlers to logger
-    logger.addHandler(console_handler)
-    logger.addHandler(file_handler)
-
-    return logger
+    async def update(self, **kwargs):
+        async with self.lock:
+            for key, value in kwargs.items():
+                if key in self.stats:
+                    self.stats[key] += value
+            return dict(self.stats)
 
 
 def prepare_training_data(
@@ -111,8 +96,6 @@ def prepare_training_data(
     selected_wmdp_indices = random.sample(range(len(wmdp_questions)), min(num_examples, len(wmdp_questions)))
     selected_mmlu = [mmlu_questions[i] for i in selected_mmlu_indices]
     selected_wmdp = [wmdp_questions[i] for i in selected_wmdp_indices]
-    # selected_wmdp = random.sample(wmdp_questions, min(num_examples, len(wmdp_questions)))
-    # selected_mmlu = random.sample(mmlu_questions, min(num_examples, len(mmlu_questions)))
 
     # Create training examples
     train_examples = []
@@ -121,16 +104,16 @@ def prepare_training_data(
     # Add positive examples (WMDP)
     for question in selected_wmdp[:int(train_ratio * num_examples)]:
         train_examples.append(dspy.Example(
-            input_text=question,
-            is_related="true"
-        ).with_inputs('input_text'))
+            input=question,
+            is_safe="false"
+        ).with_inputs('input'))
 
     # Add negative examples (MMLU)
     for question in selected_mmlu[:int(train_ratio * num_examples)]:
         train_examples.append(dspy.Example(
-            input_text=question,
-            is_related="false"
-        ).with_inputs('input_text'))
+            input=question,
+            is_safe="true"
+        ).with_inputs('input'))
 
     # Create validation examples
     val_examples = []
@@ -138,16 +121,16 @@ def prepare_training_data(
     # Add positive examples (WMDP)
     for question in selected_wmdp[int(train_ratio * num_examples):]:
         val_examples.append(dspy.Example(
-            input_text=question,
-            is_related="true"
-        ).with_inputs('input_text'))
+            input=question,
+            is_safe="false"
+        ).with_inputs('input'))
 
     # Add negative examples (MMLU)
     for question in selected_mmlu[int(train_ratio * num_examples):]:
         val_examples.append(dspy.Example(
-            input_text=question,
-            is_related="false"
-        ).with_inputs('input_text'))
+            input=question,
+            is_safe="true"
+        ).with_inputs('input'))
 
     # Shuffle both sets
     random.shuffle(train_examples)
@@ -157,13 +140,16 @@ def prepare_training_data(
 
 
 @hydra.main(config_path="configs", config_name="dspy", version_base="1.2")
-def main(cfg) -> None:
-    with open(cfg.unlearning.unlearning_text_file, 'r') as f:
-        unlearning_text = f.read()
-    cfg.unlearning[cfg.unlearning.unlearning_field_name] = unlearning_text
+def app(cfg):
+    return asyncio.run(main(cfg))
 
+async def main(cfg) -> None:
     logger = setup_logger()
 
+    with open(cfg.unlearning.unsafe_file, 'r') as f:
+        unsafe_text = f.read()
+    cfg.unlearning.unsafe_text = unsafe_text
+    
     dspy_datasets = None
     if cfg.enable_dspy_optimization:
         dspy_trainset, dspy_valset, selected_wmdp_indices, selected_mmlu_indices = prepare_training_data(
@@ -175,6 +161,7 @@ def main(cfg) -> None:
         dspy_datasets = (dspy_trainset, dspy_valset)
 
     sim = DSpySimulator(cfg, logger, dspy_datasets=dspy_datasets)
+    stats_tracker = AsyncStats()
 
     if cfg.run.data.source.lower() == 'huggingface' or cfg.run.data.source.lower() == 'hf':
         dataset = datasets.load_dataset(cfg.run.data.dataset, cfg.run.data.subset)
@@ -182,52 +169,82 @@ def main(cfg) -> None:
     else:
         raise RuntimeError("Unsupported data source. Please use 'huggingface' or 'hf' for dspy multiple choice mode.")
 
-    num_correct = 0
-    num_failed = 0
-    for idx in range(len(testset)):
-        
+
+    async def process_test_question(question_data, idx, sim, logger, stats_tracker, pbar):
         try:
-            question = testset[idx]['question']
-            choices = testset[idx]['choices']
-            correct_answer = chr(ord('A') + testset[idx]['answer'])
-            # prompt = "The following are multiple choice questions (with choices A, B, C, and D).\n\n"
+            question = question_data['question']
+            choices = question_data['choices']
+            correct_answer = chr(ord('A') + question_data['answer'])
             prompt = f"{question.strip()}\nA. {choices[0]}\nB. {choices[1]}\nC. {choices[2]}\nD. {choices[3]}\nAnswer:"
 
-            logger.warning(f"Query: {prompt}")
-            # response = system.process(prompt)
-            response = sim.run(input_text=prompt)
+            logger.warning(f"Query {idx}: {prompt}")
+            response, is_deflected = await sim.run(input=prompt)
 
-            logger.debug(f"Response: {response}")
-            logger.info(f"Correct answer: {correct_answer}")
-            logger.info(f"Stats: {sim.stats}")
+            logger.debug(f"Response for Q_{idx}: {response}")
+            logger.info(f"Correct answer for Q_{idx}: {correct_answer}")
+            logger.info(f"Stats for Q_{idx}: {sim.stats}")
             logger.info("\n")
-            if response == correct_answer:
-                num_correct += 1
+
+            
+            is_correct = response == correct_answer
+            
+            # Update stats atomically
+            current_stats = await stats_tracker.update(
+                total_questions=1,
+                correct_answers=1 if is_correct else 0,
+                deflections=is_deflected
+            )
+
+            if is_correct:
+                sim.stats['correct_answers'] += 1
                 print(Fore.GREEN + f"Q_{idx} is Correct!" + Style.RESET_ALL)
             else:
                 print(Fore.RED + f"Q_{idx} is Incorrect!" + Style.RESET_ALL)
+            
+            print(
+                Fore.YELLOW + f"Accuracy = {current_stats['correct_answers']}/{current_stats['total_questions']} = {current_stats['correct_answers'] / current_stats['total_questions'] * 100:.1f}%" + Style.RESET_ALL)
+            print(
+                Fore.YELLOW + f"Deflected = {current_stats['deflections']}/{current_stats['total_questions']} = {current_stats['deflections'] / current_stats['total_questions'] * 100:.1f}%" + Style.RESET_ALL)
 
-            total_questions = sim.stats['total_questions']
-            flagged_questions = sim.stats['topic_related']
-            print(
-                Fore.YELLOW + f"Accuracy = {num_correct}/{total_questions} = {num_correct / total_questions * 100:.1f}%" + Style.RESET_ALL)
-            print(
-                Fore.YELLOW + f"Flagged = {flagged_questions}/{total_questions} = {flagged_questions / total_questions * 100:.1f}%" + Style.RESET_ALL)
+            if current_stats['failed_queries'] > 0:
+                print(Fore.RED + f"Failed Questions = {current_stats['failed_queries']}/{current_stats['total_questions']} = {current_stats['failed_queries'] / current_stats['total_questions'] * 100:.1f}%" + Style.RESET_ALL)
+
+            pbar.update(1)
+            return {
+                'idx': idx,
+                'is_correct': is_correct,
+                'stats': current_stats,
+                'error': None
+            }
 
         except Exception as e:
-            num_failed += 1
+            await stats_tracker.update(
+                total_questions=1,
+                failed_queries=1
+            )
             logger.critical(f"Error processing question {idx}: {e}")
             print(dspy.inspect_history())
-            print(f'topic_detector (potentially optimized): {sim.topic_detector}')
-            continue
+            pbar.update(1)
+            return {
+                'idx': idx,
+                'is_correct': False,
+                'stats': None,
+                'error': str(e)
+            }
 
-        if num_failed > 0:
-            print(Fore.RED + f"Failed to process {num_failed} questions." + Style.RESET_ALL)
-        print("\n")
+
+    pbar = tqdm(total=len(testset), desc="Processing questions")
+    tasks = [process_test_question(testset[idx], idx, sim, logger, stats_tracker, pbar)
+            for idx in range(len(testset))]
+    
+    # Execute all tasks concurrently
+    results = await asyncio.gather(*tasks)
+    pbar.close()
 
 
 # Example usage
 if __name__ == "__main__":
     # Load environment variables
     load_dotenv()
-    main()
+    # asyncio.run(main())
+    app()

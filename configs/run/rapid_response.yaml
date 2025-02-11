@@ -1,0 +1,14 @@
+data:
+  name: "rapid_response"
+  
+  train_file: "evals/rapid_response/dataset_splits/train_n5_seed42.csv"
+  test_file: ["evals/rapid_response/dataset_splits/eval_id_n5_seed42.csv", "evals/rapid_response/dataset_splits/eval_ood_n5_seed42.csv", "evals/rapid_response/dataset_splits/eval_benign_seed42.csv"]
+  exp_version=2
+
+  # train_file: "evals/rapid_response/dataset_splits/train_n10_seed42.csv"
+  # test_file: ["evals/rapid_response/dataset_splits/eval_id_n10_seed42.csv", "evals/rapid_response/dataset_splits/eval_ood_n10_seed42.csv", "evals/rapid_response/dataset_splits/eval_benign_seed42.csv"]
+  # exp_version=3
+
+  # train_file: "evals/rapid_response/dataset_splits/train_n15_seed42.csv"
+  # test_file: ["evals/rapid_response/dataset_splits/eval_id_n15_seed42.csv", "evals/rapid_response/dataset_splits/eval_benign_seed42.csv"]
+  # exp_version=4

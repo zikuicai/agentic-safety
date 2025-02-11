@@ -1,0 +1,7 @@
+unsafe_file: "unlearning_wmdp.txt"
+unsafe_topic: "security domain knowledge"
+unsafe_subject: "keywords"
+unsafe_text: null
+
+refusal_message: "I apologize, but I cannot provide information about that."
+mcq_choices: [ "A", "B", "C", "D" ]

@@ -1,4 +1,4 @@
 data:
   name: "strong_reject"
-  train_file: "evals/strong_reject/strongreject_train.csv"
+  train_file: "evals/false_refusal/combined_dataset.csv"
   test_file: "evals/strong_reject/strongreject_small_jailbreak.csv"

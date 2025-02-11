@@ -1,6 +1,6 @@
 import dspy
 
-class OrchestratorSignature(dspy.Signature):
+class TopicDetectorSignature(dspy.Signature):
     """Determines if the input is related to unlearning topic"""
     input_text: str = dspy.InputField()
     is_related: bool = dspy.OutputField()

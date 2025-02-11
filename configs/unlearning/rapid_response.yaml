@@ -1,0 +1,7 @@
+unsafe_file: "unsafe_strong_reject.txt"
+unsafe_topic: "harmful behaviors"
+unsafe_subject: "topics"
+unsafe_text: null
+
+refusal_message: "I'm sorry, but I can't assist with that."
+mcq_choices: [ "A", "B", "C", "D" ]

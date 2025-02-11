@@ -8,4 +8,4 @@ data:
 
 gen_only: false # set to true to only generate answers
 judge_only: false # set to true to only judge answers
-judge_reference_mappings: {'gpt-4': 'meta-llama-3.1-8b-instruct'}
+judge_reference_mappings: {'gpt-4': 'Qwen2.5-72B-Instruct'}

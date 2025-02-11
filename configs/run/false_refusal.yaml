@@ -1,4 +1,4 @@
 data:
   name: "false_refusal"
-  train_file: "evals/false_refusal/xstest.csv"
+  train_file: "evals/false_refusal/combined_dataset.csv"
   test_file: "evals/false_refusal/PHTest_harmless.csv"

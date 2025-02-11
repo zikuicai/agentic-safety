@@ -1,6 +1,6 @@
 defaults:
   - run: mmlu
-  - unlearning: default
+  - unlearning: wmdp
 
 seed: 42
 logs_dir: "logs"
@@ -18,3 +18,4 @@ model:
 
   use_cache: true
   temperature: 0.0
+  exp_version: "0"
