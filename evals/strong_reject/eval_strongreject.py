@@ -4,7 +4,7 @@ from datasets import Dataset
 from pathlib import Path
 
 
-eval_file = "jailbroken_responses_20250121_204407_Llama-3.1-8B-Instruct.csv"
+eval_file = "jailbroken_responses_20250121_204407_Llama-3-8B-Instruct.csv"
 
 df_org = pd.read_csv("strongreject_small_jailbreak.csv")
 df = pd.read_csv(f"response/{eval_file}")

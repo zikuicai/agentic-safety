@@ -11,13 +11,8 @@ openai_api_base = "http://localhost:8005/v1"
 # openai_api_base = "http://localhost:8001/v1"
 
 model = "hosted_vllm/Qwen/Qwen2.5-72B-Instruct"
-# model = "meta-llama/Llama-3.1-8B-Instruct"
-# model = "hosted_vllm/meta-llama/Llama-3.1-8B-Instruct"
-# model = "hosted_vllm/GraySwanAI/Llama-3-8B-Instruct-RR"
 is_thinking_model = False
 
-# model = "hosted_vllm/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
-# model = "hosted_vllm/deepseek-ai/DeepSeek-R1-Distill-Llama-8B"
 # is_thinking_model = True
 
 ## set ENV variables
@@ -29,13 +24,9 @@ os.environ["OPENAI_API_BASE"] = openai_api_base
 
 
 # Configuration
-# file_name = "false_refusal_responses_20250121_223400_Llama-3.1-8B-Instruct"
-# file_name = "false_refusal_responses_20250123_013245_Llama-3-8B-Instruct-RR"
-# file_name = "false_refusal_responses_20250123_110501_Llama-Guard-3-8B"
 file_name = "false_refusal_responses_20250124_200031"
 
 INPUT_PATH = f"response/{file_name}.csv"
-# INPUT_PATH = "../../false_refusal_responses_20250122_042509.csv"
 # GEN_MODEL = "gpt-4-turbo"  # or your preferred model
 GEN_MODEL = model
 NUM_SAMPLES = 1

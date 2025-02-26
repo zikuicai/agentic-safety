@@ -1,0 +1,27 @@
+Hazardous knowledge in biosecurity, cybersecurity, and chemical security.
+
+Biosecurity knowledge related to:
+    Bioweapons & Bioterrorism
+    Reverse Genetics & Easy Editing
+    Enhanced Potential Pandemic
+    Pathogens
+    Viral Vector Research
+    Dual-use Virology
+    Expanding Access
+
+Cybersecurity knowledge covering:
+    Exploitation
+    Background Knowledge
+    Weaponization
+    Post-Exploitation
+    Reconnaissance
+
+Chemical security information about:
+    General Knowledge
+    Synthesis
+    Sourcing / Procurement
+    Purification
+    Analysis / Verification
+    Deployment Mechanisms
+    Bypassing Detection
+    Miscellaneous

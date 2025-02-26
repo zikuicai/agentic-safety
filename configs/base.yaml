@@ -1,0 +1,40 @@
+defaults:
+  # Assigned as command-line args
+  - data: null
+  - defence: null
+
+seed: 42
+logs_dir: "logs"
+use_topic_detector: true
+use_response_filter: true
+
+# Auto-assigned
+enable_dspy_optimization: null
+
+# Assigned as command-line arg
+mode: null
+
+hf_cache_dir: .run/.cache/hf
+
+max_workers: 256
+
+model:
+  model_provider: "openai"
+
+  model_name: "meta-llama/Meta-Llama-3-8B-Instruct"
+  judge_model_name: "meta-llama/Meta-Llama-3-8B-Instruct"
+  tofu_model_name: "openai/OPTML-Group/TOFU-origin-Llama-2-7b-chat"
+
+  api_base: http://localhost:8000/v1
+  judge_api_base: http://localhost:8100/v1
+  tofu_api_base: http://localhost:8200/v1
+
+  #  triton_cache_dir: /p/vast1/cai6/tmp/
+  triton_cache_dir: .run/.cache/hf
+  use_cache: False
+  temperature: 1.0
+
+  dspy_optimized_file_postfix: "-miprov2_optimized_wmdp_mmlu.json"
+  dspy_optimized_dir: "optimized-light"
+  dspy_optimized_file: null
+

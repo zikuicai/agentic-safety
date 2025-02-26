@@ -1,0 +1,40 @@
+2025-01-08 19:57:52.205537: I tensorflow/core/util/port.cc:113] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2025-01-08 19:57:52.262195: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2025-01-08 19:57:53.356855: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+Stats:
+{
+    "bench_name": "mt_bench",
+    "mode": "single",
+    "judge": "meta-llama-3-8B-instruct",
+    "baseline": null,
+    "model_list": [
+        "meta-llama-3-8B-instruct"
+    ],
+    "total_num_questions": 2,
+    "total_num_matches": 4,
+    "output_path": "data/mt_bench/model_judgment/model_meta-llama-3-8B-instruct/judge_meta-llama-3-8B-instruct_single.jsonl"
+}
+
+  0%|          | 0/4 [00:00<?, ?it/s]
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 81, turn: 1, model: meta-llama-3-8B-instruct, score: 8, judge: ('meta-llama-3-8B-instruct', 'single-v1')
+
+ 25%|██▌       | 1/4 [00:07<00:23,  7.76s/it]
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 82, turn: 1, model: meta-llama-3-8B-instruct, score: 8, judge: ('meta-llama-3-8B-instruct', 'single-v1')
+
+ 50%|█████     | 2/4 [00:12<00:12,  6.11s/it]
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 81, turn: 2, model: meta-llama-3-8B-instruct, score: 6, judge: ('meta-llama-3-8B-instruct', 'single-v1-multi-turn')
+
+ 75%|███████▌  | 3/4 [00:17<00:05,  5.65s/it]
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+question: 82, turn: 2, model: meta-llama-3-8B-instruct, score: 6, judge: ('meta-llama-3-8B-instruct', 'single-v1-multi-turn')
+
+100%|██████████| 4/4 [00:22<00:00,  5.29s/it]
+100%|██████████| 4/4 [00:22<00:00,  5.64s/it]

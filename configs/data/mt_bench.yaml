@@ -1,0 +1,10 @@
+data:
+  name: "mt-bench"
+  source: null
+  questions_file: "mt_bench/data/mt_bench/question.jsonl"
+  questions_begin: null
+  questions_end: null
+  answers_dir: "mt_bench/data/mt_bench/model_answer"
+
+judge_only: false
+judge_reference_mappings: {'gpt-4': 'meta-llama/Meta-Llama-3-8B-Instruct'}
