@@ -103,7 +103,7 @@ python3 run_jailbreak_baseline.py
 python3 run_jailbreak_llamaguard.py
 ```
 
-#### Run_Jailbreak (Using Our Method)
+#### Jailbreak (Using Our Method)
 You must choose mode based on your experimental setup. A limited set of modes is currently supported.
 ```sh
 python3 run_jailbreak.py data=<false_refusal | rapid_response | strong_reject> defense=<jail_false_refusal | jail_rapid_response | jail_strong_reject> mode=<dspy-base | dspy-json>
