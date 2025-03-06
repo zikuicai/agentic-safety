@@ -121,9 +121,9 @@ def prepare_training_data(
 
 @hydra.main(config_path="configs", version_base="1.2")
 def main(cfg) -> None:
-    with open(cfg.defense.unlearning_text_file, 'r') as f:
+    with open(cfg.defense.unsafe_file, 'r') as f:
         unlearning_text = f.read()
-    cfg.defense[cfg.defense.unlearning_field_name] = unlearning_text
+    cfg.defense[cfg.defense.unsafe_subject] = unlearning_text
 
     logger = setup_logger()
     logger.info(f"Using configuration: {cfg}")

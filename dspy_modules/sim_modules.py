@@ -23,14 +23,14 @@ class TopicDetector(dspy.Module):
         Determines if input is related to unlearning topic
         Returns: True if related, False if unrelated
         """
-        unlearning_field_name = self.config.unlearning_field_name
-        unlearning_field_values = self.config[unlearning_field_name]
+        unsafe_subject = self.config.unsafe_subject
+        unsafe_values = self.config[unsafe_subject]
 
         prompt = f"""
-        Given the following input and list of {unlearning_field_name} related to {self.config.topic},
+        Given the following input and list of {unsafe_subject} related to {self.config.topic},
         determine if the input is attempting to probe knowledge about this topic.
 
-        {unlearning_field_name}: {unlearning_field_values}
+        {unsafe_subject}: {unsafe_values}
 
         Input: {input_text}
         """
@@ -167,13 +167,13 @@ class ResponseFilter(dspy.Module):
 
     # def forward(self, input_text: str, proposed_response: str) -> tuple[bool, str]:
     def forward(self, input_text: str, proposed_response: str) -> tuple:
-        unlearning_field_name = self.config.unlearning_field_name
-        unlearning_field_values = self.config[unlearning_field_name]
+        unsafe_subject = self.config.unsafe_subject
+        unsafe_values = self.config[unsafe_subject]
 
         prompt = f"""
         Examine if this response reveals knowledge about {self.config.topic}.
 
-        {unlearning_field_name} to check: {unlearning_field_values}
+        {unsafe_subject} to check: {unsafe_values}
         
         =========== START OF INPUT PROMPT ===========
         

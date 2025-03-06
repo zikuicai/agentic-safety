@@ -1,7 +1,7 @@
-defaults:
-  # Assigned as command-line args
-  - data: null
-  - defence: null
+#defaults:
+#  # Assigned as command-line args
+#  - data: null
+#  - defence: null
 
 seed: 42
 logs_dir: "logs"

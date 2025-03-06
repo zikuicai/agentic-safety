@@ -52,7 +52,7 @@ class RegularSimulator(Simulator):
         # if self.use_separate_responder_lm:
         #     self.responder_lm = dspy.LM(**self.responder_lm_conf)
         self.unlearning_config = cfg.defense
-        with open(self.unlearning_config.unlearning_text_file, 'r') as f:
+        with open(self.unlearning_config.unsafe_file, 'r') as f:
             self.unlearning_text = f.read()
 
         self.prompting_field_name = self.unlearning_config.prompting_field_name

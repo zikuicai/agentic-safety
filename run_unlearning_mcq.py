@@ -100,7 +100,7 @@ def main(cfg) -> None:
 
     with open(cfg.defense.unsafe_file, 'r') as f:
         unsafe_text = f.read()
-    cfg.defense[cfg.defense.unafe_subject] = unsafe_text
+    cfg.defense[cfg.defense.unsafe_subject] = unsafe_text
 
     logger.info(f"Using configuration: {cfg}")
 
