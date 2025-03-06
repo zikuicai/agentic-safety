@@ -41,39 +41,11 @@ class RegularSimulator(Simulator):
     def __init__(self, cfg, logger: logging.Logger):
         super().__init__(cfg)
 
-        # self.use_separate_responder_lm = use_separate_responder_lm
-        # if self.use_separate_responder_lm:
-        #     assert responder_lm_conf is not None and isinstance(responder_lm_conf, dict)
-        #     self.responder_lm_conf = responder_lm_conf
-        #
-        # self.use_non_parsing_generator = use_non_parsing_generator
         self.cfg = cfg
         self.logger = logger
         assert self.logger is not None
-        # self.lm = (model=cfg.model.model_name, api_base=cfg.model.api_base, provider=cfg.model.model_provider,
-        #                   cache=cfg.model.use_cache, temperature=cfg.model.temperature)
-        # dspy.configure(lm=self.lm)
-
-        # self.responder_lm = self.lm
-        # if self.use_separate_responder_lm:
-        #     self.responder_lm = dspy.LM(**self.responder_lm_conf)
 
         self.unlearning_config = cfg.defense
-        # Detects whether the input is related to the unlearning topics to be randomly responded to or not
-        # self.topic_detector = Agent(system_prompt=self.cfg.topic_detector_sys_prompt,
-        #                             model_provider=cfg.model.model_provider,
-        #                             model_name=cfg.model.model_name, api_base=cfg.model.api_base,
-        #                             temperature=cfg.model.temperature)
-        #
-        # # Sanitizes the user input from any prompt injection or system behavior override attacks
-        # self.sanitizer = Agent(system_prompt="", model_provider=cfg.model.model_provider,
-        #                        model_name=cfg.model.model_name, api_base=cfg.model.api_base,
-        #                        temperature=cfg.model.temperature)
-        #
-        # # Determines the type of the question (multiple choice, etc.)
-        # self.question_analyzer = Agent(system_prompt="", model_provider=cfg.model.model_provider,
-        #                                model_name=cfg.model.model_name, api_base=cfg.model.api_base,
-        #                                temperature=cfg.model.temperature)
 
         # The responder that provides legit answers to both multiple choice and free-form questions
         self.responder = Agent(sys_prompt="", model_provider=cfg.model.model_provider,
@@ -81,12 +53,7 @@ class RegularSimulator(Simulator):
                                temperature=cfg.model.temperature, output_schema=OutputSchema,
                                use_cache=cfg.model.use_cache)
 
-        # The random responder that provides safe responses for unlearning-topic-related queries
-        # self.deflector = Agent(system_prompt="", model_provider=cfg.model.model_provider,
-        #                        model_name=cfg.model.model_name, api_base=cfg.model.api_base,
-        #                        temperature=cfg.model.temperature)
-        #
-        # # The final response filterer providing a safer gateway for the final responses out of the system
+        # The final response filterer providing a safer gateway for the final responses out of the system
         self.response_filterer = Agent(sys_prompt="", model_provider=cfg.model.model_provider,
                                        model_name=cfg.model.model_name, api_base=cfg.model.api_base,
                                        temperature=cfg.model.temperature, output_schema=FiltererOutputSchema,
@@ -107,25 +74,13 @@ class RegularSimulator(Simulator):
             question_text, stripped_question = question_text
         self.stats['total_questions'] += 1
 
-        # Step 1: Analyze question type
-        # question_type, choices = self.question_analyzer(input_text)
-        # self.logger.debug(f"Question type: {question_type}")
         question_type = "multiple_choice" if is_mcq else "free_form"
+
+        # Update stats
         if question_type == "multiple_choice":
             self.stats['multiple_choice'] += 1
         else:
             self.stats['free_form'] += 1
-
-        # sanitized_input = input_text
-        # Step 2: Sanitize input if needed
-        # if question_type == "multiple_choice":
-        #     # TODO: Why is sanitization not applied in this case?
-        #     sanitized_input = input_text
-        # else:
-        #     # TODO: Temporarily disabled (re-writes text and degrades quality or makes it not pass the constraints
-        #     #  passed by the user such as "start every sentence with an A" in MT-bench. sanitized_input =
-        #     #  self.sanitizer(input_text)
-        #     sanitized_input = input_text
 
         generate_random_response = False
         # filtering_question = question_text

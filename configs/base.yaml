@@ -4,6 +4,8 @@
 #  - defence: null
 
 seed: 42
+#log_level: "INFO"
+log_level: "DEBUG"
 logs_dir: "logs"
 use_topic_detector: true
 use_response_filter: true
@@ -16,7 +18,7 @@ mode: null
 
 hf_cache_dir: .run/.cache/hf
 
-max_workers: 256
+max_workers: 1
 
 model:
   model_provider: "openai"

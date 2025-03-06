@@ -9,6 +9,7 @@ from colorama import Fore, Style
 from dotenv import load_dotenv
 from tqdm import tqdm
 
+
 def process_question(sim, question_text, correct_answer, is_dspy: bool):
     if is_dspy:
         response = sim.run(question_text)
@@ -20,9 +21,12 @@ def process_question(sim, question_text, correct_answer, is_dspy: bool):
 def run_simulation(sim, testset, logger, answers_file_path, is_dspy, max_workers):
     num_correct = 0
     num_failed = 0
-    total_questions = len(testset)
+    # total_questions = len(testset)
+    total_questions = 20
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+    print('AAAA')
+    # breakpoint()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
         futures = []
         for idx in range(total_questions):
             question = testset[idx]['question']
@@ -46,7 +50,8 @@ def run_simulation(sim, testset, logger, answers_file_path, is_dspy, max_workers
 
             futures.append(
                 executor.submit(process_question, sim, question_text, correct_answer, is_dspy))
-
+        print('BBBB')
+        breakpoint()
         for idx, future in tqdm(enumerate(concurrent.futures.as_completed(futures))):
             try:
                 response, correct_answer, question_text = future.result()
@@ -90,9 +95,8 @@ def run_simulation(sim, testset, logger, answers_file_path, is_dspy, max_workers
 
 @hydra.main(config_path="configs", config_name="base", version_base="1.2")
 def main(cfg) -> None:
-    logger = setup_logger()
+    logger = setup_logger(level=cfg.log_level)
     logger.info(f"Configuration: {cfg}")
-
     # if os.environ['CUDA_VISIBLE_DEVICES']:
     #     vllm_proc, cfg = setup_vllm(cfg, logger)
     #     logger.info(f"VLLM server started at {cfg.model.api_base}")
@@ -122,7 +126,7 @@ def main(cfg) -> None:
         cfg.model.dspy_optimized_file = os.path.basename(cfg.model.model_name) + cfg.model.dspy_optimized_file_postfix
         cfg.model.dspy_optimized_file = os.path.join(cfg.model.dspy_optimized_dir, cfg.model.dspy_optimized_file)
         assert os.path.exists(
-            cfg.model.dspy_optimized_file), f"DSpy optimization file must exist. Provided file: {cfg.model.dspy_optimized_file}"
+            cfg.model.dspy_optimized_file), f"DSpy optimization file must exist. Not found: {cfg.model.dspy_optimized_file}"
         from sim.sim_dspy import DSpySimulator
         sim = DSpySimulator(cfg, logger, dspy_datasets=None)
         is_dspy = True
@@ -154,6 +158,7 @@ def main(cfg) -> None:
     # Run solver
     logger.info(f"Solving for {cfg.data.data.name} with {len(testset)} questions.")
     run_simulation(sim, testset, logger, answers_file_path, is_dspy, cfg.max_workers)
+
 
 # Example usage
 if __name__ == "__main__":

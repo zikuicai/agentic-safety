@@ -28,7 +28,11 @@ class BaseColoredFormatter(logging.Formatter):
 def setup_logger(name='colored_logger', log_file='app.log', level=logging.DEBUG):
     # Create logger
     logger = logging.getLogger(name)
-    logger.setLevel(level)
+    logging.getLogger(name).setLevel(level)
+    for logger_name in logging.root.manager.loggerDict:
+        print(f'Muting logs from {logger_name}')
+        logging.getLogger(logger_name).setLevel(logging.CRITICAL)
+    print()
 
     # Create handlers
     console_handler = logging.StreamHandler()

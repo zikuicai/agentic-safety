@@ -154,7 +154,7 @@ def main(cfg) -> None:
         optimized_file = os.path.join(cfg.model.dspy_optimized_dir,
                                       os.path.basename(cfg.model.model_name) + cfg.model.dspy_optimized_file_postfix)
         assert os.path.exists(
-            optimized_file), f"DSpy optimization file must exist. Provided file: {optimized_file}"
+            optimized_file), f"DSpy optimization file must exist. Not found: {optimized_file}"
         cfg.model.dspy_optimized_file = optimized_file
         logger.info(f"Using optimized topic detector from: {optimized_file}")
         from sim.sim_dspy import DSpySimulator
