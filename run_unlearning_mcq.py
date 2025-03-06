@@ -21,10 +21,8 @@ def process_question(sim, question_text, correct_answer, is_dspy: bool):
 def run_simulation(sim, testset, logger, answers_file_path, is_dspy, max_workers):
     num_correct = 0
     num_failed = 0
-    # total_questions = len(testset)
-    total_questions = 20
+    total_questions = len(testset)
 
-    # breakpoint()
     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
         futures = []
         for idx in range(total_questions):
@@ -50,7 +48,6 @@ def run_simulation(sim, testset, logger, answers_file_path, is_dspy, max_workers
             futures.append(
                 executor.submit(process_question, sim, question_text, correct_answer, is_dspy))
         for idx, future in tqdm(enumerate(concurrent.futures.as_completed(futures))):
-            print("CCCC")
             try:
                 response, correct_answer, question_text = future.result()
                 ans_json = {

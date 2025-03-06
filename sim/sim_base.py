@@ -60,7 +60,6 @@ class RegularSimulator(Simulator):
         }
 
     def run(self, question_text: str, is_mcq: bool) -> str:
-        print('DDDD')
         self.stats['total_questions'] += 1
 
         question_type = "multiple_choice" if is_mcq else "free_form"
