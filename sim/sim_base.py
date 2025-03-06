@@ -14,6 +14,7 @@ def run_agent_query(agent, query, use_json: bool, possible_outputs=None, **kwarg
         try:
             resp = agent(query, **kwargs)
             resp = get_response_content(resp, to_json=use_json)
+            print(type(resp), resp)
             if possible_outputs:
                 if use_json:
                     for k in possible_outputs.keys():
@@ -22,7 +23,8 @@ def run_agent_query(agent, query, use_json: bool, possible_outputs=None, **kwarg
                     assert resp.lower() in [x.lower() for x in possible_outputs]
             return resp
         except Exception as e:
-            print(e)
+            print(f'Error: {e}')
+            attempts += 1
     return None
 
 
@@ -58,6 +60,7 @@ class RegularSimulator(Simulator):
         }
 
     def run(self, question_text: str, is_mcq: bool) -> str:
+        print('DDDD')
         self.stats['total_questions'] += 1
 
         question_type = "multiple_choice" if is_mcq else "free_form"
@@ -69,7 +72,7 @@ class RegularSimulator(Simulator):
         if question_type == "multiple_choice":
             response = run_agent_query(self.responder,
                                        query=question_text,
-                                       use_json=False,
+                                       use_json=True,
                                        possible_outputs={'choice': self.cfg.defense.mcq_choices},
                                        use_output_schema=True)
             response = response['choice'][0]

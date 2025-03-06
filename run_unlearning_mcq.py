@@ -24,7 +24,6 @@ def run_simulation(sim, testset, logger, answers_file_path, is_dspy, max_workers
     # total_questions = len(testset)
     total_questions = 20
 
-    print('AAAA')
     # breakpoint()
     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
         futures = []
@@ -50,9 +49,8 @@ def run_simulation(sim, testset, logger, answers_file_path, is_dspy, max_workers
 
             futures.append(
                 executor.submit(process_question, sim, question_text, correct_answer, is_dspy))
-        print('BBBB')
-        breakpoint()
         for idx, future in tqdm(enumerate(concurrent.futures.as_completed(futures))):
+            print("CCCC")
             try:
                 response, correct_answer, question_text = future.result()
                 ans_json = {
@@ -97,10 +95,6 @@ def run_simulation(sim, testset, logger, answers_file_path, is_dspy, max_workers
 def main(cfg) -> None:
     logger = setup_logger(level=cfg.log_level)
     logger.info(f"Configuration: {cfg}")
-    # if os.environ['CUDA_VISIBLE_DEVICES']:
-    #     vllm_proc, cfg = setup_vllm(cfg, logger)
-    #     logger.info(f"VLLM server started at {cfg.model.api_base}")
-    #     wait_for_model(logger, cfg.model.api_base)
 
     with open(cfg.defense.unsafe_file, 'r') as f:
         unsafe_text = f.read()
@@ -160,7 +154,6 @@ def main(cfg) -> None:
     run_simulation(sim, testset, logger, answers_file_path, is_dspy, cfg.max_workers)
 
 
-# Example usage
 if __name__ == "__main__":
     # Load environment variables
     load_dotenv()
