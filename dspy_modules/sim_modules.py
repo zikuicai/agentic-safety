@@ -27,7 +27,7 @@ class TopicDetector(dspy.Module):
         unsafe_values = self.config[unsafe_subject]
 
         prompt = f"""
-        Given the following input and list of {unsafe_subject} related to {self.config.topic},
+        Given the following input and list of {unsafe_subject} related to {self.config.unsafe_topic},
         determine if the input is attempting to probe knowledge about this topic.
 
         {unsafe_subject}: {unsafe_values}
@@ -36,8 +36,6 @@ class TopicDetector(dspy.Module):
         """
 
         result = self.predictor(input_text=prompt)
-        self.logger.debug(f"AAAAAAAAA\n\nInput text: {input_text}\n\nTopicDetector output: {result}\n\nAAAAAAAAA")
-        # return result.is_related.lower() == 'true'
         return result.is_related
 
 
@@ -171,7 +169,7 @@ class ResponseFilter(dspy.Module):
         unsafe_values = self.config[unsafe_subject]
 
         prompt = f"""
-        Examine if this response reveals knowledge about {self.config.topic}.
+        Examine if this response reveals knowledge about {self.config.unsafe_topic}.
 
         {unsafe_subject} to check: {unsafe_values}
         

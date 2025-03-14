@@ -3,9 +3,8 @@ data:
   source: "huggingface"
   dataset: "locuslab/TOFU"
 
-  subset: "forget01"
-#  subset: "forget05"
-#  subset: "forget10"
+  # Assigned as command-line arg
+  subset: null
 
   split: "train"
 

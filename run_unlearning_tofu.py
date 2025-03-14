@@ -85,7 +85,7 @@ TOFU_PERC_MAPPER = {
 }
 
 
-@hydra.main(config_path="configs", config_name="base", version_base="1.2")
+@hydra.main(config_path="configs", config_name="base_unl", version_base="1.2")
 def main(cfg) -> None:
     logger = setup_logger()
 
@@ -110,13 +110,15 @@ def main(cfg) -> None:
     logger.info(f"Loaded unsafe text: \n'''\n{unsafe_text}'''\n\n")
     logger.info(f"Using configuration: {cfg}")
 
-    responder_lm_conf = {"model_name": cfg.model.tofu_model_name,
-                         "dict_based": True,
-                         "api_base": cfg.model.tofu_api_base,
-                         "provider": cfg.model.model_provider,
-                         "cache": cfg.model.use_cache,
-                         "temperature": cfg.model.temperature}
+    dataset = datasets.load_dataset(cfg.data.data.dataset, cfg.data.data.subset)
+    questions = dataset[cfg.data.data.split]
+    model_id = cfg.model.model_name.split('/')[-1]
 
+    responder_lm_conf = {
+        "dict_based": True,
+        "responses_dict": {q: a for q, a in zip(questions['question'], questions['answer'])}
+
+    }
     if str(cfg.mode).startswith('filtering'):
         from sim.sim_tofu_filtering import TofuFilteringSimulator
         sim = TofuFilteringSimulator(cfg, logger, unsafe_text, responder_lm_conf)
@@ -130,10 +132,6 @@ def main(cfg) -> None:
                             use_non_parsing_generator=True)
     else:
         raise RuntimeError(f"Unsupported mode: {cfg.mode}")
-
-    dataset = datasets.load_dataset(cfg.data.data.dataset, cfg.data.data.subset)
-    questions = dataset[cfg.data.data.split]
-    model_id = cfg.model.model_name.split('/')[-1]
 
     results = process_questions(sim, questions, logger, model_id, max_workers=cfg.max_workers)
     results = [results[idx] for idx in range(len(results))]

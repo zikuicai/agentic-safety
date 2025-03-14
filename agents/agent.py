@@ -13,16 +13,22 @@ class Agent:
         self.output_schema = output_schema
         self.use_cache = use_cache
 
-    def __call__(self, query, use_output_schema=True) -> Any:
-        if self._system_prompt != "":
-            messages = [
-                {"role": "system", "content": self._system_prompt},
-                {"role": "user", "content": query},
-            ]
+    def __call__(self, query, use_output_schema=True, is_message=False) -> Any:
+        if is_message:
+            # Input query should be directly used as the input for messages
+            assert isinstance(query, list)
+            messages = query
         else:
-            messages = [
-                {"role": "user", "content": query},
-            ]
+            # Messages dict should be constructed from the query
+            if self._system_prompt != "":
+                messages = [
+                    {"role": "system", "content": self._system_prompt},
+                    {"role": "user", "content": query},
+                ]
+            else:
+                messages = [
+                    {"role": "user", "content": query},
+                ]
 
         # Only give output schema to model if not None
         params = {
@@ -34,7 +40,6 @@ class Agent:
             "extra_body": {  # OpenAI python accepts extra args in extra_body
                 "cache": {"use-cache": self.use_cache}
             },
-            "max_tokens": 2048
         }
         if use_output_schema and self.output_schema is not None:
             params["response_format"] = self.output_schema

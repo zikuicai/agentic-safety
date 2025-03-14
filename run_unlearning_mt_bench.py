@@ -110,7 +110,7 @@ def run_remote(subprocess_command: str, env, cwd, output_file: str):
 
 
 def run_judge(answer_model: str, judge_model: str, api_base: str,
-              judge_reference_mappings: Optional[Dict[str, str]] = None):
+              model_tag: str, n_workers: int, judge_reference_mappings: Optional[Dict[str, str]] = None):
     subprocess_env = os.environ
     subprocess_env['API_BASE'] = api_base
 
@@ -120,14 +120,17 @@ def run_judge(answer_model: str, judge_model: str, api_base: str,
     judge_reference_maps = judge_reference_mappings or {}
     judge_reference_maps_arg = ' '.join([f'--reference-map {x}:{y}' for x, y in judge_reference_maps.items()])
 
-    subprocess_command = (f"python3 gen_judgment.py --judge-model {judge_model.split('/')[-1]} --mode "
-                          f"single {judge_reference_maps_arg} --model-list {answer_model} -y")
+    subprocess_command = (f"python3 gen_judgment.py --judge-model {judge_model} --mode single "
+                          f"{judge_reference_maps_arg} "
+                          f"--model-list {answer_model.split('/')[-1]} "
+                          f"--parallel {n_workers} "
+                          f"--answer-dir data/mt_bench/model_answer_{model_tag} --model-tag {model_tag} -y")
     print(f'Calling subprocess_command: {subprocess_command}')
 
     run_remote(subprocess_command, env=subprocess_env, cwd=os.path.join('evals', 'mt_bench'), output_file='run.log')
 
 
-@hydra.main(config_path="configs", config_name="base", version_base="1.2")
+@hydra.main(config_path="configs", config_name="base_unl", version_base="1.2")
 def main(cfg) -> None:
     logger = setup_logger()
     logger.info(f"Configuration: {cfg}")
@@ -189,7 +192,7 @@ def main(cfg) -> None:
 
     # Run judge for evaluation
     run_judge(answer_model=cfg.model.model_name, judge_model=cfg.model.judge_model_name,
-              api_base=cfg.model.judge_api_base,
+              api_base=cfg.model.judge_api_base, model_tag=cfg.mode, n_workers=cfg.max_workers,
               judge_reference_mappings=cfg.data.judge_reference_mappings)
 
 

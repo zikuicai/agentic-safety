@@ -1,0 +1,41 @@
+#defaults:
+#  # Assigned as command-line args
+#  - data: null
+#  - defence: null
+
+seed: 42
+#log_level: "INFO"
+log_level: "DEBUG"
+logs_dir: "logs"
+use_topic_detector: true
+use_response_filter: true
+
+# Auto-assigned
+enable_dspy_optimization: null
+
+# Assigned as command-line arg
+mode: null
+
+hf_cache_dir: .run/.cache/hf
+
+max_workers: 256
+
+model:
+  model_provider: "openai"
+
+  model_name: "meta-llama/Meta-Llama-3-8B-Instruct"
+  guard_model_name: "meta-llama/Llama-Guard-3-8B"
+
+  api_base: http://localhost:11110/v1
+  guard_api_base: http://localhost:11111/v1
+
+  #  triton_cache_dir: /p/vast1/cai6/tmp/
+  triton_cache_dir: .run/.cache/hf
+  use_cache: False
+  temperature: 1.0
+
+  dspy_optimized_file_postfix: "-miprov2_optimized.json"
+  dspy_optimized_dir: "optimized-jail-${model.dspy_MIPRO_autorun_mode}"
+  dspy_MIPRO_autorun_mode: "light"
+  # Assigned dynamically at runtime (not as command line arg)
+  dspy_optimized_file: null

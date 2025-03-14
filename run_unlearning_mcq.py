@@ -23,7 +23,7 @@ def run_simulation(sim, testset, logger, answers_file_path, is_dspy, max_workers
     num_failed = 0
     total_questions = len(testset)
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = []
         for idx in range(total_questions):
             question = testset[idx]['question']
@@ -55,6 +55,8 @@ def run_simulation(sim, testset, logger, answers_file_path, is_dspy, max_workers
                     "correct_answer": correct_answer,
                     "response": response
                 }
+
+                logger.debug(f"Writing answer to file: {answers_file_path}")
                 with open(answers_file_path, 'a') as f:
                     f.write(json.dumps(ans_json) + "\n")
 
@@ -88,7 +90,7 @@ def run_simulation(sim, testset, logger, answers_file_path, is_dspy, max_workers
             print("\n")
 
 
-@hydra.main(config_path="configs", config_name="base", version_base="1.2")
+@hydra.main(config_path="configs", config_name="base_unl", version_base="1.2")
 def main(cfg) -> None:
     logger = setup_logger(level=cfg.log_level)
     logger.info(f"Configuration: {cfg}")
@@ -98,6 +100,7 @@ def main(cfg) -> None:
     cfg.defense[cfg.defense.unsafe_subject] = unsafe_text
 
     logger.info(f"Using configuration: {cfg}")
+
 
     is_dspy = False
     if str(cfg.mode).startswith('prompting'):
@@ -118,6 +121,7 @@ def main(cfg) -> None:
         cfg.model.dspy_optimized_file = os.path.join(cfg.model.dspy_optimized_dir, cfg.model.dspy_optimized_file)
         assert os.path.exists(
             cfg.model.dspy_optimized_file), f"DSpy optimization file must exist. Not found: {cfg.model.dspy_optimized_file}"
+        logger.info(f"Using optimized topic detector from: {cfg.model.dspy_optimized_file}")
         from sim.sim_dspy import DSpySimulator
         sim = DSpySimulator(cfg, logger, dspy_datasets=None)
         is_dspy = True

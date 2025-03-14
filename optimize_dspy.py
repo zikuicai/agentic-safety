@@ -17,7 +17,7 @@ import argparse
 
 
 def prepare_training_data(
-        num_examples: int = 100,
+        num_examples: int = 50,
         wmdp_domains: List[str] = ['cyber', 'bio', 'chem'],
         mmlu_subjects: List[str] = ['college_computer_science', 'high_school_computer_science'],
         seed: int = 42
@@ -119,7 +119,7 @@ def prepare_training_data(
     return train_examples, val_examples
 
 
-@hydra.main(config_path="configs", version_base="1.2")
+@hydra.main(config_path="configs", config_name="base_unl", version_base="1.2")
 def main(cfg) -> None:
     with open(cfg.defense.unsafe_file, 'r') as f:
         unlearning_text = f.read()
@@ -136,9 +136,12 @@ def main(cfg) -> None:
     )
     dspy_datasets = (dspy_trainset, dspy_valset)
 
+    # Dynamically set the path for optimized
     cfg.model.dspy_optimized_file = os.path.basename(cfg.model.model_name) + cfg.model.dspy_optimized_file_postfix
-    cfg.model.dspy_optimized_file = os.path.join('optimized', cfg.model.dspy_optimized_file)
-    os.makedirs('optimized', exist_ok=True)
+    cfg.model.dspy_optimized_file = os.path.join(cfg.model.dspy_optimized_dir, cfg.model.dspy_optimized_file)
+
+    # Make directories for the optimization outputs
+    os.makedirs(cfg.model.dspy_optimized_dir, exist_ok=True)
     cfg.enable_dspy_optimization = True
     logger.info(f"Using DSPy optimization file: {cfg.model.dspy_optimized_file}")
     if os.path.exists(cfg.model.dspy_optimized_file):
@@ -146,10 +149,11 @@ def main(cfg) -> None:
                   cfg.model.dspy_optimized_file + '.bac' + str(time.time()).split('.')[0])
         logger.info(f"Using optimized topic detector from: {cfg.model.dspy_optimized_file}")
 
+    # Run optimization
     sim = DSpySimulator(cfg, logger, dspy_datasets=dspy_datasets)
+    sim.run_optimize(force_retrain=True)
 
 
-# Example usage
 if __name__ == "__main__":
     # Load environment variables
     load_dotenv()

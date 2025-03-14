@@ -217,6 +217,15 @@ if __name__ == "__main__":
         help="A list of models to be evaluated",
     )
     parser.add_argument(
+        "--answer-dir", type=str, default=None, help="The directory of model answers."
+    )
+    parser.add_argument(
+        "--model-tag", type=str, default="", help="The tag of the model to be evaluated."
+    )
+    parser.add_argument(
+        "--base-dir", type=str, default="", help="The base directory of the data."
+    )
+    parser.add_argument(
         "--parallel", type=int, default=1, help="The number of concurrent API calls."
     )
     parser.add_argument(
@@ -229,9 +238,11 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    question_file = f"data/{args.bench_name}/question.jsonl"
-    answer_dir = f"data/{args.bench_name}/model_answer"
-    ref_answer_dir = f"data/{args.bench_name}/reference_answer"
+    question_file = str(os.path.join(args.base_dir, f"data/{args.bench_name}/question.jsonl"))
+    answer_dir = str(
+        os.path.join(args.base_dir, f"data/{args.bench_name}/model_answer")) if not args.answer_dir else args.answer_dir
+    ref_answer_dir = str(os.path.join(args.base_dir, f"data/{args.bench_name}/reference_answer"))
+    args.judge_file = str(os.path.join(args.base_dir, args.judge_file))
 
     # Load questions
     questions = load_questions(question_file, None, None)
@@ -252,23 +263,27 @@ if __name__ == "__main__":
         models = get_model_list(answer_dir)
     else:
         models = args.model_list
-
     assert models is not None and len(models) > 0
+
+    if len(models) > 1:
+        print("Warning: Using multiple models for the evaluation; the judgment results will be mixed.")
 
     if args.mode == "single":
         judges = make_judge_single(args.judge_model, judge_prompts)
         play_a_match_func = play_a_match_single
         output_file = (
-            f"data/{args.bench_name}/model_judgment/{args.judge_model}_single.jsonl"
+            f"data/{args.bench_name}/model_judgment/model_{models[0]}_{args.model_tag}/judge_{args.judge_model}_single.jsonl"
         )
+        output_file = str(os.path.join(args.base_dir, output_file))
         make_match_func = make_match_single
         baseline_model = None
     else:
         judges = make_judge_pairwise(args.judge_model, judge_prompts)
         play_a_match_func = play_a_match_pair
         output_file = (
-            f"data/{args.bench_name}/model_judgment/{args.judge_model}_pair.jsonl"
+            f"data/{args.bench_name}/model_judgment_{args.model_tag}/{args.judge_model}_pair.jsonl"
         )
+        output_file = str(os.path.join(args.base_dir, output_file))
         if args.mode == "pairwise-all":
             make_match_func = make_match_all_pairs
             baseline_model = None
@@ -279,6 +294,8 @@ if __name__ == "__main__":
     if os.path.exists(output_file):
         os.remove(output_file)
 
+    print(f'Model answer keys: {model_answers.keys()}')
+    print(f'Ref answer keys: {ref_answers.keys()}')
     check_data(questions, model_answers, ref_answers, models, judges)
 
     question_math = [q for q in questions if q["category"] in NEED_REF_CATS]

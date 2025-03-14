@@ -75,6 +75,7 @@ class RegularSimulator(Simulator):
             self.stats['free_form'] += 1
 
         query = f'{self.prompting_prefix}\n\n{question_text}'
+        print(f'Query: {query}')
 
         choice = None
         # while choice not in self.cfg.defense.mcq_choices:

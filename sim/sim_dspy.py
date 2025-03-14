@@ -10,7 +10,7 @@ from sim.sim import Simulator
 
 
 def optimize_topic_detector(topic_detector: TopicDetector, logger: logging.Logger, dspy_trainset,
-                            dspy_valset) -> TopicDetector:
+                            dspy_valset, autorun_mode: str) -> TopicDetector:
     # Define accuracy metric
     def accuracy_metric(gold, pred, trace=None):
         match = gold.is_related.lower() == str(pred).lower()
@@ -22,7 +22,7 @@ def optimize_topic_detector(topic_detector: TopicDetector, logger: logging.Logge
     optimizer = dspy.MIPROv2(
         metric=accuracy_metric,
         num_threads=256,
-        auto="heavy"
+        auto=autorun_mode
     )
 
     # Compile and optimize
@@ -38,16 +38,17 @@ def optimize_topic_detector(topic_detector: TopicDetector, logger: logging.Logge
 
 
 def optimize_topic_detector_once(topic_detector: TopicDetector, dspy_trainset, dspy_valset, logger: logging.Logger,
-                                 optimized_file):
+                                 optimized_file, MIPRO_autorun_mode: str, force_retrain=False) -> TopicDetector:
     optimized_detector = topic_detector
-    if os.path.exists(optimized_file):
+    if not force_retrain and os.path.exists(optimized_file):
         optimized_detector.load(optimized_file)
         logger.info(f"Using optimized topic detector from: {optimized_file}")
     else:
         assert dspy_trainset is not None and dspy_valset is not None, "Training and validation sets must not be None."
 
         logger.info("Optimizing topic detector...")
-        optimized_detector = optimize_topic_detector(topic_detector, logger, dspy_trainset, dspy_valset)
+        optimized_detector = optimize_topic_detector(topic_detector, logger, dspy_trainset, dspy_valset,
+                                                     autorun_mode=MIPRO_autorun_mode)
         optimized_detector.save(optimized_file, save_program=False)
 
     assert optimized_detector is not None, "Optimized detector cannot be None."
@@ -61,7 +62,6 @@ class DSpySimulator(Simulator):
                  use_non_parsing_generator=False,
                  responder_lm_conf=None):
         super().__init__(cfg)
-
         self.use_separate_responder_lm = use_separate_responder_lm
         self.responder_lm_conf = None
         if self.use_separate_responder_lm:
@@ -69,7 +69,6 @@ class DSpySimulator(Simulator):
             self.responder_lm_conf = responder_lm_conf
 
         self.use_non_parsing_generator = use_non_parsing_generator
-        self.cfg = cfg
         self.logger = logger
         assert self.logger is not None
         self.lm = dspy.LM(model=f'{cfg.model.model_provider}/' + cfg.model.model_name, api_base=cfg.model.api_base,
@@ -124,9 +123,14 @@ class DSpySimulator(Simulator):
 
         # Optimize the topic detector
         if cfg.enable_dspy_optimization == True:
-            self.topic_detector = optimize_topic_detector_once(self.topic_detector, self.dspy_trainset,
-                                                               self.dspy_valset, self.logger,
-                                                               self.cfg.model.dspy_optimized_file)
+            self.run_optimize(force_retrain=False)
+
+    def run_optimize(self, force_retrain):
+        self.topic_detector = optimize_topic_detector_once(self.topic_detector, self.dspy_trainset,
+                                                           self.dspy_valset, self.logger,
+                                                           self.cfg.model.dspy_optimized_file,
+                                                           self.cfg.model.dspy_MIPRO_autorun_mode,
+                                                           force_retrain=force_retrain)
 
     def run(self, input_text: str) -> str:
         """
