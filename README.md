@@ -20,8 +20,9 @@ inference-time defenses that surpass traditional static model modifications.
 - `configs/`: Contains configuration files for the experiments.
     - `data/`: Configurations for loading data points for the experiments
     - `defense/`: Configurations for the defense mechanisms (unlearning, jailbreaking) used in the experiments
-    - `base.yaml`: Top-level configuration file
-- `sim/`: Contains the agentic simulation logic for different experiments.
+    - `base_unl.yaml`: Top-level configuration file for unlearning experiments
+    - `base_jail.yaml`: Top-level configuration file for jailbreak experiments
+- `sim/`: Contains the agentic simulation **pipelines** logic for different experiments.
 - `utils/`: Logging and Litellm utility tools
 - `.env`: Environment variables file to store API keys and other sensitive information. Make sure to create this file
   and add your API keys
@@ -29,14 +30,18 @@ inference-time defenses that surpass traditional static model modifications.
 
 ### Scripts
 
-- `optimize_dspy.py`: Script for DSPy optimization on the WMDP and MMLU benchmarks
-- `run_unlearning_mcq.py`: Script for running unlearning experiments for multiple-choice questions (i.e. on the WMDP and
-  MMLU benchmarks)
-- `run_unlearning_mt_bench.py`: Script for running unlearning experiments for the mt_bench benchmark
-- `run_unlearning_tofu.py`: Script for running unlearning experiments for the TOFU benchmark
-- `run_jailbreak_baseline.py`: Script for running the jailbreak experiments using the baseline model
-- `run_jailbreak_llamaguard.py`: Script for running the jailbreak experiments using the Llama-Guard model
-- `run_jailbreak.py`: Script for running AegisLLM jailbreak experiments
+- `optimize_unlearning_dspy.py`: Script for DSPy optimization on the WMDP and MMLU benchmarks for unlearning
+- `optimize_jailbreak_dspy.py`: Script for DSPy optimization on the the StrongReject and FalseRefusal benchmarks for
+  jailbreaking
+- Unlearning Runs:
+  - `run_unlearning_mcq.py`: Script for running unlearning experiments for multiple-choice questions (i.e. on the WMDP and
+    MMLU benchmarks)
+  - `run_unlearning_mt_bench.py`: Script for running unlearning experiments for the mt_bench benchmark
+  - `run_unlearning_tofu.py`: Script for running unlearning experiments for the TOFU benchmark
+- Jailbreak Runs:
+  - `run_jailbreak_baseline.py`: Script for running the jailbreak experiments using the baseline model
+  - `run_jailbreak_llamaguard.py`: Script for running the jailbreak experiments using the Llama-Guard model
+  - `run_jailbreak.py`: Script for running jailbreak experiments using the AegisLLM pipeline
 
 ## Setup
 
@@ -56,7 +61,7 @@ inference-time defenses that surpass traditional static model modifications.
    pip install -r requirements.txt
    ```
 
-## Runtime
+## Experimentation
 
 ### Modes
 
@@ -69,8 +74,8 @@ following modes are supported:
 - `filtering`: Run using the filtering baseline defense mechanism for simulation.
   See [Guardrail Baselines for Unlearning in LLMs](https://arxiv.org/abs/2403.03329) for details.
 - `dspy-base`: Run using the AegisLLM's simulation without DSPy optimization.
-- `dspy-json`: Run using the AegisLLM's simulation with DSPy optimization. You have to have run the `optimize_dspy.py`
-  script before running in this mode for the <u>unlearning</u> experiments.
+- `dspy-json`: Run using the AegisLLM's simulation with DSPy optimization. You have to have run the `optimize_unlearning_dspy.py` and `optimize_jailbreak_dspy.py`
+  scripts before running in this mode for the <u>unlearning</u> and <u>jailbreaking</u> experiments, respectively.
 
 **DSPy-base** and **DSPy-json** modes correspond to our method.
 
