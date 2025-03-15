@@ -23,8 +23,7 @@ max_workers: 256
 model:
   model_provider: "openai"
 
-#  model_name: "meta-llama/Llama-3.1-8B-Instruct"
-  model_name: "JINJIN7987/llama3-8b-refusal-vpi"
+  model_name: "meta-llama/Meta-Llama-3-8B-Instruct"
   guard_model_name: "meta-llama/Llama-Guard-3-8B"
   evals_model_name: "Qwen/Qwen2.5-72B-Instruct"
 
