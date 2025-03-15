@@ -22,7 +22,7 @@ inference-time defenses that surpass traditional static model modifications.
     - `defense/`: Configurations for the defense mechanisms (unlearning, jailbreaking) used in the experiments
     - `base_unl.yaml`: Top-level configuration file for unlearning experiments
     - `base_jail.yaml`: Top-level configuration file for jailbreak experiments
-- `sim/`: Contains the agentic simulation **pipelines** logic for different experiments.
+- `pipelines/`: Contains the agentic pipelines for different agentic architectures.
 - `utils/`: Logging and Litellm utility tools
 - `.env`: Environment variables file to store API keys and other sensitive information. Make sure to create this file
   and add your API keys
@@ -65,16 +65,16 @@ inference-time defenses that surpass traditional static model modifications.
 
 ### Modes
 
-You can use different modes to benchmark different categories of experiments for the corresponding simulations. The
+You can use different modes to benchmark different categories of experiments for the corresponding pipelines. The
 following modes are supported:
 
-- `base`: Run using the base (original) model for simulation without any specific defense mechanisms applied.
-- `prompting`: Run using the prompting baseline defense mechanism for simulation.
+- `base`: Run using the base (original) model for pipeline without any specific defense mechanisms applied.
+- `prompting`: Run using the prompting baseline defense mechanism for pipeline.
   See [Guardrail Baselines for Unlearning in LLMs](https://arxiv.org/abs/2403.03329) for details.
-- `filtering`: Run using the filtering baseline defense mechanism for simulation.
+- `filtering`: Run using the filtering baseline defense mechanism for pipeline.
   See [Guardrail Baselines for Unlearning in LLMs](https://arxiv.org/abs/2403.03329) for details.
-- `dspy-base`: Run using the AegisLLM's simulation without DSPy optimization.
-- `dspy-json`: Run using the AegisLLM's simulation with DSPy optimization. You have to have run the `optimize_unlearning_dspy.py` and `optimize_jailbreak_dspy.py`
+- `dspy-base`: Run using the AegisLLM's pipeline without DSPy optimization.
+- `dspy-json`: Run using the AegisLLM's pipeline with DSPy optimization. You have to have run the `optimize_unlearning_dspy.py` and `optimize_jailbreak_dspy.py`
   scripts before running in this mode for the <u>unlearning</u> and <u>jailbreaking</u> experiments, respectively.
 
 **DSPy-base** and **DSPy-json** modes correspond to our method.
@@ -115,19 +115,19 @@ For the jailbreak experiments, you need to first run Python scripts to generate 
 1. **Baseline**
 
 ```sh
-python3 run_jailbreak_baseline.py +data=<false_refusal | rapid_response | strong_reject> +defense=<jail_false_refusal | jail_rapid_response | jail_strong_reject>
+python3 run_jailbreak_baseline.py +data=<false_refusal | strong_reject> +defense=<jail_false_refusal | jail_strong_reject>
 ```
 
 2. **Llama-Guard**
 
 ```sh
-python3 run_jailbreak_llamaguard.py
+python3 run_jailbreak_llamaguard.py +data=<false_refusal | strong_reject> +defense=<jail_false_refusal | jail_strong_reject>
 ```
 
 3. **Jailbreak (AegisLLM):** You must choose mode based on your experimental setup. A limited set of modes is currently supported.
 
 ```sh
-python3 run_jailbreak.py +data=<false_refusal | rapid_response | strong_reject> +defense=<jail_false_refusal | jail_rapid_response | jail_strong_reject> mode=<dspy-base | dspy-json>
+python3 run_jailbreak.py +data=<false_refusal | strong_reject> +defense=<jail_false_refusal | jail_strong_reject> mode=<dspy-base | dspy-json>
 ```
 
 ## License
