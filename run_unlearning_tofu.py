@@ -22,7 +22,7 @@ def setup_logger(name='colored_logger', level=logging.DEBUG):
     return logger
 
 
-def process_single_prompt(sim, logger, testset, model_id, idx):
+def process_single_prompt(pipeline, logger, testset, model_id, idx):
     num_retries = 10
     success = False
     while num_retries >= 0:
@@ -31,14 +31,14 @@ def process_single_prompt(sim, logger, testset, model_id, idx):
             prompt = question
             logger.warning(f"Query: {prompt}")
 
-            response = sim.run(prompt)
+            response = pipeline.run(prompt)
             logger.debug(f"Response: {response}")
 
-            logger.info(f"Stats: {sim.stats}")
+            logger.info(f"Stats: {pipeline.stats}")
             logger.info("\n")
 
-            total_questions = sim.stats['total_questions']
-            flagged_questions = sim.stats['topic_related']
+            total_questions = pipeline.stats['total_questions']
+            flagged_questions = pipeline.stats['topic_related']
 
             print(
                 Fore.YELLOW + f"Flagged = {flagged_questions}/{total_questions} = {flagged_questions / total_questions * 100:.2f}%" + Style.RESET_ALL)
@@ -64,10 +64,10 @@ def process_single_prompt(sim, logger, testset, model_id, idx):
     return ans_json
 
 
-def process_questions(sim, questions, logger, model_id, max_workers):
+def process_questions(pipeline, questions, logger, model_id, max_workers):
     results = {}
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(process_single_prompt, sim, logger, questions, model_id, idx) for idx in
+        futures = [executor.submit(process_single_prompt, pipeline, logger, questions, model_id, idx) for idx in
                    range(len(questions))]
         for future in as_completed(futures):
             result = future.result()
@@ -120,20 +120,20 @@ def main(cfg) -> None:
 
     }
     if str(cfg.mode).startswith('filtering'):
-        from sim.sim_tofu_filtering import TofuFilteringSimulator
-        sim = TofuFilteringSimulator(cfg, logger, unsafe_text, responder_lm_conf)
+        from pipelines.pipeline_tofu_filtering import TofuFilteringPipeline
+        pipeline = TofuFilteringPipeline(cfg, logger, unsafe_text, responder_lm_conf)
     elif str(cfg.mode).startswith('dspy-base'):
-        from sim.sim_dspy import DSpySimulator
+        from pipelines.pipeline_dspy import DSpyPipeline
         cfg.enable_dspy_optimization = False
-        sim = DSpySimulator(cfg, logger,
-                            dspy_datasets=None,
-                            use_separate_responder_lm=True,
-                            responder_lm_conf=responder_lm_conf,
-                            use_non_parsing_generator=True)
+        pipeline = DSpyPipeline(cfg, logger,
+                                dspy_datasets=None,
+                                use_separate_responder_lm=True,
+                                responder_lm_conf=responder_lm_conf,
+                                use_non_parsing_generator=True)
     else:
         raise RuntimeError(f"Unsupported mode: {cfg.mode}")
 
-    results = process_questions(sim, questions, logger, model_id, max_workers=cfg.max_workers)
+    results = process_questions(pipeline, questions, logger, model_id, max_workers=cfg.max_workers)
     results = [results[idx] for idx in range(len(results))]
 
     if '{}' in cfg.data.data.answers_dir:

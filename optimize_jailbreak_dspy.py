@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import os
 import time
 import hydra
-from sim.sim_jailbreak_dspy import DSpySimulator
+from pipelines.pipeline_jailbreak_dspy import DSpyPipeline
 from utils.logging import setup_logger
 import random
 from typing import List, Tuple
@@ -62,8 +62,10 @@ def main(cfg) -> None:
     )
     dspy_datasets = (dspy_trainset, dspy_valset)
 
+    benchmark = cfg.data.data.name
+
     # Dynamically set the path for optimized
-    cfg.model.dspy_optimized_file = os.path.basename(cfg.model.model_name) + cfg.model.dspy_optimized_file_postfix
+    cfg.model.dspy_optimized_file = os.path.basename(cfg.model.model_name)+ f'-{benchmark}-' + cfg.model.dspy_optimized_file_postfix
     cfg.model.dspy_optimized_file = os.path.join(cfg.model.dspy_optimized_dir, cfg.model.dspy_optimized_file)
 
     # Make directories for the optimization outputs
@@ -75,8 +77,8 @@ def main(cfg) -> None:
                   cfg.model.dspy_optimized_file + '.bac' + str(time.time()).split('.')[0])
         logger.info(f"Using optimized topic detector from: {cfg.model.dspy_optimized_file}")
 
-    sim = DSpySimulator(cfg, logger, dspy_datasets=dspy_datasets)
-    sim.run_optimize(force_retrain=True)
+    pipeline = DSpyPipeline(cfg, logger, dspy_datasets=dspy_datasets)
+    pipeline.run_optimize(force_retrain=True)
 
 
 if __name__ == "__main__":

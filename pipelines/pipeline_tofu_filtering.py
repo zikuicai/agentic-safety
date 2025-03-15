@@ -5,7 +5,7 @@ from agents.agent import Agent
 from pydantic import BaseModel, Field, constr
 
 from dspy_modules.sim_modules import DictResponder
-from sim.sim import Simulator
+from pipelines.pipeline_abs import Pipeline
 from utils.litellm_utils import get_response_content
 
 
@@ -32,7 +32,7 @@ class FiltererOutputSchema(BaseModel):
     choice: constr(pattern=r'^(yes|no)$')
 
 
-class TofuFilteringSimulator(Simulator):
+class TofuFilteringPipeline(Pipeline):
     def __init__(self, cfg, logger: logging.Logger, unlearning_text: str, responder_lm_conf: dict):
         super().__init__(cfg)
 

@@ -23,11 +23,14 @@ max_workers: 256
 model:
   model_provider: "openai"
 
-  model_name: "meta-llama/Meta-Llama-3-8B-Instruct"
+#  model_name: "meta-llama/Llama-3.1-8B-Instruct"
+  model_name: "JINJIN7987/llama3-8b-refusal-vpi"
   guard_model_name: "meta-llama/Llama-Guard-3-8B"
+  evals_model_name: "Qwen/Qwen2.5-72B-Instruct"
 
   api_base: http://localhost:11110/v1
   guard_api_base: http://localhost:11111/v1
+  evals_api_base: http://localhost:11900/v1
 
   #  triton_cache_dir: /p/vast1/cai6/tmp/
   triton_cache_dir: .run/.cache/hf

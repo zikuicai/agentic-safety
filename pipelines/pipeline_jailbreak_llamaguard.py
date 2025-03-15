@@ -3,7 +3,7 @@ import pandas as pd
 from dataclasses import dataclass
 from agents.agent import Agent
 from utils.litellm_utils import get_response_content
-from sim.sim import Simulator
+from pipelines.pipeline_abs import Pipeline
 
 
 @dataclass
@@ -15,7 +15,7 @@ class ProcessingResult:
     success: bool
 
 
-class JailbreakSimulator(Simulator):
+class JailbreakPipeline(Pipeline):
     def __init__(self, cfg, logger: logging.Logger):
         super().__init__(cfg)
         self.cfg = cfg

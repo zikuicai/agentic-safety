@@ -6,7 +6,7 @@ import dspy
 from dspy_modules.sim_modules import TopicDetector, QuestionAnalyzer, InputSanitizer, Responder, DictResponder, \
     Deflector, \
     ResponseFilter
-from sim.sim import Simulator
+from pipelines.pipeline_abs import Pipeline
 
 
 def optimize_topic_detector(topic_detector: TopicDetector, logger: logging.Logger, dspy_trainset,
@@ -55,7 +55,7 @@ def optimize_topic_detector_once(topic_detector: TopicDetector, dspy_trainset, d
     return optimized_detector
 
 
-class DSpySimulator(Simulator):
+class DSpyPipeline(Pipeline):
     """Main system that orchestrates all components"""
 
     def __init__(self, cfg, logger: logging.Logger, dspy_datasets: tuple = None, use_separate_responder_lm=False,

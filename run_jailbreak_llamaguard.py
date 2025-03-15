@@ -9,14 +9,14 @@ from dotenv import load_dotenv
 import hydra
 from omegaconf import DictConfig
 from tqdm import tqdm
-from sim.sim_jailbreak_llamaguard import JailbreakSimulator
+from pipelines.pipeline_jailbreak_llamaguard import JailbreakPipeline
 import subprocess
 from utils.logging import setup_logger
 
 load_dotenv()
 
 
-def run_evaluation(benchmark, input_path: str, output_dir: str, model: Optional[str] = None):
+def run_evaluation(benchmark, input_path: str, output_dir: str, model: Optional[str] = None, api_base: Optional[str] = None):
     subprocess_env = os.environ
 
     os.makedirs(output_dir, exist_ok=True)
@@ -24,7 +24,7 @@ def run_evaluation(benchmark, input_path: str, output_dir: str, model: Optional[
     output_path = os.path.join(output_dir, os.path.basename(input_path))
     if benchmark == "false_refusal":
         subprocess_command = (
-            f"python {eval_script} --input-path {input_path} --output-path {output_path} --model {model}")
+            f"python {eval_script} --input-path {input_path} --output-path {output_path} --model {model} --api-base {api_base}")
     elif benchmark == "strong_reject":
         subprocess_command = (f"python {eval_script} --input-path {input_path} --output-path {output_path}")
     else:
@@ -41,7 +41,7 @@ def run_evaluation(benchmark, input_path: str, output_dir: str, model: Optional[
 def main(cfg: DictConfig) -> None:
     logger = setup_logger()
 
-    simulator = JailbreakSimulator(cfg, logger)
+    pipeline = JailbreakPipeline(cfg, logger)
 
     benchmark = benchmark = cfg.data.data.name
     output_root = os.path.join('evals', benchmark, 'model_responses')
@@ -58,18 +58,18 @@ def main(cfg: DictConfig) -> None:
 
     results = []
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(simulator.run, idx, row['row'], benchmark) for idx, row in enumerate(row_data)]
+        futures = [executor.submit(pipeline.run, idx, row['row'], benchmark) for idx, row in enumerate(row_data)]
         for future in tqdm(as_completed(futures), total=len(futures), desc="Processing prompts"):
             results.append(future.result())
 
     df = pd.DataFrame([result.__dict__ for result in results])
     df.to_csv(output_file, index=False, escapechar='\\', quoting=csv.QUOTE_ALL, doublequote=True)
 
-    simulator.print_stats(results, len(test_df), output_file)
+    pipeline.print_stats(results, len(test_df), output_file)
 
     # Call the run_evaluation function
     run_evaluation(benchmark, input_path=output_file, output_dir=os.path.join('evals', benchmark, 'model_evals'),
-                   model=cfg.model.model_name)
+                   model=cfg.model.evals_model_name, api_base=cfg.model.evals_api_base)
 
 
 if __name__ == "__main__":

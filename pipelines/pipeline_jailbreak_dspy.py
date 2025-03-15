@@ -2,7 +2,7 @@ import os
 import logging
 
 import dspy
-from sim.sim import Simulator
+from pipelines.pipeline_abs import Pipeline
 from dspy_modules.sim_modules_jailbreak import Orchestrator, QuestionAnalyzer, Responder, Deflector, ResponseFilter
 
 
@@ -69,7 +69,7 @@ def optimize_orchestrator_once(orchestrator, safety_trainset, safety_valset, log
     return optimized_orchestrator
 
 
-class DSpySimulator(Simulator):
+class DSpyPipeline(Pipeline):
     """Main system that orchestrates all components"""
 
     def __init__(self, cfg, logger: logging.Logger, dspy_datasets: tuple = None, use_separate_responder_lm=False,

@@ -10,11 +10,11 @@ import pandas as pd
 from colorama import Fore, Style
 from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from sim.sim_jailbreak_dspy import DSpySimulator
+from pipelines.pipeline_jailbreak_dspy import DSpyPipeline
 from utils.logging import setup_logger
 
 
-def process_prompt(sim, row, idx, logger, benchmark, refusal_message):
+def process_prompt(pipeline, row, idx, logger, benchmark, refusal_message):
     if benchmark in ["strong_reject", "rapid_response"]:
         forbidden_prompt = row['forbidden_prompt']
         prompt = row['jailbroken_prompt']
@@ -23,12 +23,12 @@ def process_prompt(sim, row, idx, logger, benchmark, refusal_message):
         forbidden_prompt = None
 
     try:
-        response, is_deflected = sim.run(input=prompt)
+        response, is_deflected = pipeline.run(input=prompt)
     except Exception as e:
         response = refusal_message
         logger.critical(f"Error processing question {idx}: {e}")
         print(dspy.inspect_history())
-        print(f'orchestrator (potentially optimized): {sim.orchestrator}')
+        print(f'orchestrator (potentially optimized): {pipeline.orchestrator}')
 
     return {
         'prompt': prompt,
@@ -37,7 +37,8 @@ def process_prompt(sim, row, idx, logger, benchmark, refusal_message):
     }
 
 
-def run_evaluation(benchmark, input_path: str, output_dir: str, model: Optional[str] = None):
+def run_evaluation(benchmark, input_path: str, output_dir: str, model: Optional[str] = None,
+                   api_base: Optional[str] = None):
     subprocess_env = os.environ
 
     os.makedirs(output_dir, exist_ok=True)
@@ -45,7 +46,7 @@ def run_evaluation(benchmark, input_path: str, output_dir: str, model: Optional[
     output_path = os.path.join(output_dir, os.path.basename(input_path))
     if benchmark == "false_refusal":
         subprocess_command = (
-            f"python {eval_script} --input-path {input_path} --output-path {output_path} --model {model}")
+            f"python {eval_script} --input-path {input_path} --output-path {output_path} --model {model} --api-base {api_base}")
     elif benchmark == "strong_reject":
         subprocess_command = (f"python {eval_script} --input-path {input_path} --output-path {output_path}")
     else:
@@ -65,12 +66,14 @@ def main(cfg) -> None:
     with open(cfg.defense.unsafe_file, 'r') as f:
         unsafe_text = f.read()
     cfg.defense[cfg.defense.unsafe_subject] = unsafe_text
+    benchmark = cfg.data.data.name
 
     if cfg.mode == 'dspy-base':
         cfg.enable_dspy_optimization = False
     elif cfg.mode == 'dspy-json':
         cfg.enable_dspy_optimization = True
-        cfg.model.dspy_optimized_file = os.path.basename(cfg.model.model_name) + cfg.model.dspy_optimized_file_postfix
+        cfg.model.dspy_optimized_file = os.path.basename(
+            cfg.model.model_name) + f'-{benchmark}-' + cfg.model.dspy_optimized_file_postfix
         cfg.model.dspy_optimized_file = os.path.join(cfg.model.dspy_optimized_dir, cfg.model.dspy_optimized_file)
         assert os.path.exists(
             cfg.model.dspy_optimized_file), f"DSpy optimization file must exist. Not found: {cfg.model.dspy_optimized_file}"
@@ -78,27 +81,26 @@ def main(cfg) -> None:
     else:
         raise RuntimeError(f"Unsupported mode: {cfg.mode}")
 
-    sim = DSpySimulator(cfg, logger, dspy_datasets=None)
+    pipeline = DSpyPipeline(cfg, logger, dspy_datasets=None)
 
     test_file = cfg.data.data.test_file
     test_df = pd.read_csv(test_file)
-    benchmark = test_file.split("/")[-2]
     output_root = os.path.join('evals', benchmark, 'model_responses')
 
     row_data = [{'idx': idx, 'row': row} for idx, row in test_df.iterrows()]
 
     results = []
     with ThreadPoolExecutor(max_workers=cfg.max_workers) as executor:
-        futures = [executor.submit(process_prompt, sim, data['row'], data['idx'], logger, benchmark,
+        futures = [executor.submit(process_prompt, pipeline, data['row'], data['idx'], logger, benchmark,
                                    cfg.defense.refusal_message) for data in
                    row_data]
 
         for future in as_completed(futures):
             results.append(future.result())
-            total_questions = sim.stats['total_questions']
-            flagged_stage1 = sim.stats['flagged_stage1']
-            flagged_stage2 = sim.stats['flagged_stage2']
-            deflections = sim.stats['deflections']
+            total_questions = pipeline.stats['total_questions']
+            flagged_stage1 = pipeline.stats['flagged_stage1']
+            flagged_stage2 = pipeline.stats['flagged_stage2']
+            deflections = pipeline.stats['deflections']
 
             print(
                 Fore.YELLOW + f"Deflected = {deflections}/{total_questions} = {deflections / total_questions * 100:.1f}%" + Style.RESET_ALL)
@@ -124,7 +126,7 @@ def main(cfg) -> None:
 
     # Call the run_evaluation function
     run_evaluation(benchmark, input_path=output_file, output_dir=os.path.join('evals', benchmark, 'model_evals'),
-                   model=cfg.model.model_name)
+                   model=cfg.model.evals_model_name, api_base=cfg.model.evals_api_base)
 
 
 if __name__ == "__main__":

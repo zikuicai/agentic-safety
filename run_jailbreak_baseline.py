@@ -8,12 +8,12 @@ from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 from utils.logging import setup_logger
-from sim.sim_jailbreak_baseline import JailbreakSimulator
+from pipelines.pipeline_jailbreak_baseline import JailbreakPipeline
 import subprocess
 from typing import Optional, Dict
 
 
-def run_evaluation(benchmark, input_path: str, output_dir: str, model: Optional[str] = None):
+def run_evaluation(benchmark, input_path: str, output_dir: str, model: Optional[str] = None, api_base: Optional[str] = None):
     subprocess_env = os.environ
 
     os.makedirs(output_dir, exist_ok=True)
@@ -21,7 +21,7 @@ def run_evaluation(benchmark, input_path: str, output_dir: str, model: Optional[
     output_path = os.path.join(output_dir, os.path.basename(input_path))
     if benchmark == "false_refusal":
         subprocess_command = (
-            f"python {eval_script} --input-path {input_path} --output-path {output_path} --model {model}")
+            f"python {eval_script} --input-path {input_path} --output-path {output_path} --model {model} --api-base {api_base}")
     elif benchmark == "strong_reject":
         subprocess_command = (f"python {eval_script} --input-path {input_path} --output-path {output_path}")
     else:
@@ -42,14 +42,14 @@ def main(cfg) -> None:
     benchmark = cfg.data.data.name
     output_root = os.path.join('evals', benchmark, 'model_responses')
 
-    simulator = JailbreakSimulator(cfg, logger)
+    pipeline = JailbreakPipeline(cfg, logger)
 
     row_data = [{'idx': idx, 'row': row} for idx, row in test_df.iterrows()]
 
     results = []
     with ThreadPoolExecutor(max_workers=cfg.max_workers) as executor:
         # Submit all futures
-        futures = [executor.submit(simulator.run, data['idx'], data['row'], benchmark) for idx, data in enumerate(row_data)]
+        futures = [executor.submit(pipeline.run, data['idx'], data['row'], benchmark) for idx, data in enumerate(row_data)]
 
         for future in tqdm(as_completed(futures), total=len(futures), desc="Processing prompts"):
             results.append(future.result())
@@ -98,7 +98,7 @@ def main(cfg) -> None:
 
     # Call the run_evaluation function
     run_evaluation(benchmark, input_path=output_file, output_dir=os.path.join('evals', benchmark, 'model_evals'),
-                   model=cfg.model.model_name)
+                   model=cfg.model.evals_model_name, api_base=cfg.model.evals_api_base)
 
 
 if __name__ == "__main__":

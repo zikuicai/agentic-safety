@@ -1,9 +1,9 @@
 import logging
 
 from agents.agent import Agent
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, constr
 
-from sim.sim import Simulator
+from pipelines.pipeline_abs import Pipeline
 from utils.litellm_utils import get_response_content
 
 
@@ -14,7 +14,6 @@ def run_agent_query(agent, query, use_json: bool, possible_outputs=None, **kwarg
         try:
             resp = agent(query, **kwargs)
             resp = get_response_content(resp, to_json=use_json)
-            print(type(resp), resp)
             if possible_outputs:
                 if use_json:
                     for k in possible_outputs.keys():
@@ -23,17 +22,16 @@ def run_agent_query(agent, query, use_json: bool, possible_outputs=None, **kwarg
                     assert resp.lower() in [x.lower() for x in possible_outputs]
             return resp
         except Exception as e:
-            print(f'Error: {e}')
-            attempts += 1
+            print(e)
     return None
 
 
 class OutputSchema(BaseModel):
-    # choice: constr(pattern=r'^[A-D]$')
-    choice: str
+    choice: constr(pattern=r'^[A-D]$')
+    # choice: str
 
 
-class RegularSimulator(Simulator):
+class RegularPipeline(Pipeline):
     def __init__(self, cfg, logger: logging.Logger):
         super().__init__(cfg)
 
@@ -42,6 +40,13 @@ class RegularSimulator(Simulator):
         assert self.logger is not None
 
         self.unlearning_config = cfg.defense
+        with open(self.unlearning_config.unsafe_file, 'r') as f:
+            self.unlearning_text = f.read()
+
+        self.prompting_field_name = self.unlearning_config.prompting_field_name
+        self.prompting_prefix = self.unlearning_config.prompting_prefix[self.prompting_field_name]
+        if '{}' in self.prompting_prefix:
+            self.prompting_prefix = self.prompting_prefix.format(self.unlearning_text)
 
         # The responder that provides legit answers to both multiple choice and free-form questions
         self.responder = Agent(sys_prompt="", model_provider=cfg.model.model_provider,
@@ -62,24 +67,33 @@ class RegularSimulator(Simulator):
     def run(self, question_text: str, is_mcq: bool) -> str:
         self.stats['total_questions'] += 1
 
+        # Update type stats
         question_type = "multiple_choice" if is_mcq else "free_form"
         if question_type == "multiple_choice":
             self.stats['multiple_choice'] += 1
         else:
             self.stats['free_form'] += 1
 
+        query = f'{self.prompting_prefix}\n\n{question_text}'
+        print(f'Query: {query}')
+
+        choice = None
+        # while choice not in self.cfg.defense.mcq_choices:
+        #     response = self.responder(query)
+        #     response = get_response_content(response, to_json=True)
+        #     choice = response['choice']
         if question_type == "multiple_choice":
             response = run_agent_query(self.responder,
-                                       query=question_text,
-                                       use_json=True,
-                                       possible_outputs={'choice': self.cfg.defense.mcq_choices},
+                                       query=query,
+                                       use_json=True, possible_outputs={'choice': self.cfg.defense.mcq_choices},
                                        use_output_schema=True)
             response = response['choice'][0]
             self.stats['choices_made'][response] += 1
         elif question_type == "free_form":
-            response = run_agent_query(self.responder, query=question_text, use_json=False, use_output_schema=False)
+            response = run_agent_query(self.responder, query=query, use_json=False, use_output_schema=False)
 
         print(f'Got response: {response}')
+
         # Update statistics
         # self.stats['deflections'] += 1
         return response

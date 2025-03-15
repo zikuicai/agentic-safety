@@ -6,7 +6,7 @@ import logging
 from colorama import Fore, Style
 import time
 import hydra
-from sim.sim_dspy import DSpySimulator
+from pipelines.pipeline_dspy import DSpyPipeline
 from utils.logging import setup_logger
 import random
 from typing import List, Tuple
@@ -150,8 +150,8 @@ def main(cfg) -> None:
         logger.info(f"Using optimized topic detector from: {cfg.model.dspy_optimized_file}")
 
     # Run optimization
-    sim = DSpySimulator(cfg, logger, dspy_datasets=dspy_datasets)
-    sim.run_optimize(force_retrain=True)
+    pipeline = DSpyPipeline(cfg, logger, dspy_datasets=dspy_datasets)
+    pipeline.run_optimize(force_retrain=True)
 
 
 if __name__ == "__main__":

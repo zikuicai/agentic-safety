@@ -10,15 +10,15 @@ from dotenv import load_dotenv
 from tqdm import tqdm
 
 
-def process_question(sim, question_text, correct_answer, is_dspy: bool):
+def process_question(pipeline, question_text, correct_answer, is_dspy: bool):
     if is_dspy:
-        response = sim.run(question_text)
+        response = pipeline.run(question_text)
     else:
-        response = sim.run(question_text, is_mcq=True)
+        response = pipeline.run(question_text, is_mcq=True)
     return response, correct_answer, question_text
 
 
-def run_simulation(sim, testset, logger, answers_file_path, is_dspy, max_workers):
+def run_pipeline(pipeline, testset, logger, answers_file_path, is_dspy, max_workers):
     num_correct = 0
     num_failed = 0
     total_questions = len(testset)
@@ -46,7 +46,7 @@ def run_simulation(sim, testset, logger, answers_file_path, is_dspy, max_workers
                     """
 
             futures.append(
-                executor.submit(process_question, sim, question_text, correct_answer, is_dspy))
+                executor.submit(process_question, pipeline, question_text, correct_answer, is_dspy))
         for idx, future in tqdm(enumerate(concurrent.futures.as_completed(futures))):
             try:
                 response, correct_answer, question_text = future.result()
@@ -64,7 +64,7 @@ def run_simulation(sim, testset, logger, answers_file_path, is_dspy, max_workers
 
                 logger.debug(f"Response: {response}")
                 logger.info(f"Correct answer: {correct_answer}")
-                logger.info(f"Stats: {sim.stats}")
+                logger.info(f"Stats: {pipeline.stats}")
                 logger.info("\n")
                 if response == correct_answer:
                     num_correct += 1
@@ -72,8 +72,8 @@ def run_simulation(sim, testset, logger, answers_file_path, is_dspy, max_workers
                 else:
                     print(Fore.RED + f"Q_{idx} is Incorrect!" + Style.RESET_ALL)
 
-                total_questions = sim.stats['total_questions']
-                flagged_questions = sim.stats['topic_related']
+                total_questions = pipeline.stats['total_questions']
+                flagged_questions = pipeline.stats['topic_related']
                 print(
                     Fore.YELLOW + f"Accuracy = {num_correct}/{total_questions} = {num_correct / total_questions * 100:.2f}%" + Style.RESET_ALL)
                 print(
@@ -104,17 +104,17 @@ def main(cfg) -> None:
 
     is_dspy = False
     if str(cfg.mode).startswith('prompting'):
-        from sim.sim_prompting import RegularSimulator
+        from pipelines.pipeline_prompting import RegularPipeline
         logger.warning("Using prompting mode.")
-        sim = RegularSimulator(cfg, logger)
+        pipeline = RegularPipeline(cfg, logger)
     elif cfg.mode == 'filtering':
-        from sim.sim_wmdp_mmlu_filtering import RegularSimulator
+        from pipelines.pipeline_wmdp_mmlu_filtering import RegularPipeline
         logger.warning("Using filtering mode.")
-        sim = RegularSimulator(cfg, logger)
+        pipeline = RegularPipeline(cfg, logger)
     elif cfg.mode == 'base':
-        from sim.sim_base import RegularSimulator
+        from pipelines.pipeline_base import RegularPipeline
         logger.warning("Using base mode.")
-        sim = RegularSimulator(cfg, logger)
+        pipeline = RegularPipeline(cfg, logger)
     elif cfg.mode == 'dspy-json':
         cfg.enable_dspy_optimization = True
         cfg.model.dspy_optimized_file = os.path.basename(cfg.model.model_name) + cfg.model.dspy_optimized_file_postfix
@@ -122,14 +122,14 @@ def main(cfg) -> None:
         assert os.path.exists(
             cfg.model.dspy_optimized_file), f"DSpy optimization file must exist. Not found: {cfg.model.dspy_optimized_file}"
         logger.info(f"Using optimized topic detector from: {cfg.model.dspy_optimized_file}")
-        from sim.sim_dspy import DSpySimulator
-        sim = DSpySimulator(cfg, logger, dspy_datasets=None)
+        from pipelines.pipeline_dspy import DSpyPipeline
+        pipeline = DSpyPipeline(cfg, logger, dspy_datasets=None)
         is_dspy = True
     elif cfg.mode == 'dspy-base':
         # Using the dspy framework but not using the optimized detector
         cfg.enable_dspy_optimization = False
-        from sim.sim_dspy import DSpySimulator
-        sim = DSpySimulator(cfg, logger, dspy_datasets=None)
+        from pipelines.pipeline_dspy import DSpyPipeline
+        pipeline = DSpyPipeline(cfg, logger, dspy_datasets=None)
         is_dspy = True
     else:
         raise RuntimeError(f"Unsupported mode: {cfg.mode}")
@@ -152,7 +152,7 @@ def main(cfg) -> None:
 
     # Run solver
     logger.info(f"Solving for {cfg.data.data.name} with {len(testset)} questions.")
-    run_simulation(sim, testset, logger, answers_file_path, is_dspy, cfg.max_workers)
+    run_pipeline(pipeline, testset, logger, answers_file_path, is_dspy, cfg.max_workers)
 
 
 if __name__ == "__main__":

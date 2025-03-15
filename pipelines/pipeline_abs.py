@@ -5,7 +5,7 @@ import time
 import json
 
 
-class Simulator(abc.ABC):
+class Pipeline(abc.ABC):
     def __init__(self, cfg, logs_fname: str = None):
         self.cfg = cfg
 

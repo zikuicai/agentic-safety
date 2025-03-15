@@ -43,16 +43,16 @@ def setup_logger(name='colored_logger', level=logging.DEBUG):
 import concurrent.futures
 
 
-def process_single_question(sim, question, model_id, is_dspy: bool):
+def process_single_question(pipeline, question, model_id, is_dspy: bool):
     category = question["category"]
-    sim.responder.temperature = temperature_config[category]
+    pipeline.responder.temperature = temperature_config[category]
 
     # First turn
     q1 = question["turns"][0]
     if is_dspy:
-        a1 = sim.run(q1)
+        a1 = pipeline.run(q1)
     else:
-        a1 = sim.run(q1, is_mcq=False)
+        a1 = pipeline.run(q1, is_mcq=False)
 
     q2 = question["turns"][1]
     q2_prompt = (
@@ -70,9 +70,9 @@ def process_single_question(sim, question, model_id, is_dspy: bool):
 
     # Second turn with context
     if is_dspy:
-        a2 = sim.run(q2_prompt)
+        a2 = pipeline.run(q2_prompt)
     else:
-        a2 = sim.run(q2_prompt, is_mcq=False)
+        a2 = pipeline.run(q2_prompt, is_mcq=False)
 
     # Store the results
     choices = [
@@ -93,10 +93,10 @@ def process_single_question(sim, question, model_id, is_dspy: bool):
     return ans_json
 
 
-def process_questions_parallel(sim, questions, model_id, is_dspy, max_workers):
+def process_questions_parallel(pipeline, questions, model_id, is_dspy, max_workers):
     print(f'Processing {len(questions)} questions in parallel...')
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(process_single_question, sim, question, model_id, is_dspy) for question in questions]
+        futures = [executor.submit(process_single_question, pipeline, question, model_id, is_dspy) for question in questions]
         for future in concurrent.futures.as_completed(futures):
             yield future.result()
 
@@ -141,17 +141,17 @@ def main(cfg) -> None:
 
     is_dspy = False
     if cfg.mode == 'prompting':
-        from sim.sim_prompting import RegularSimulator
+        from pipelines.pipeline_prompting import RegularPipeline
         logger.warning("Using prompting mode.")
-        sim = RegularSimulator(cfg, logger)
+        pipeline = RegularPipeline(cfg, logger)
     elif cfg.mode == 'filtering':
-        from sim.sim_wmdp_mmlu_filtering import RegularSimulator
+        from pipelines.pipeline_wmdp_mmlu_filtering import RegularPipeline
         logger.warning("Using filtering mode.")
-        sim = RegularSimulator(cfg, logger)
+        pipeline = RegularPipeline(cfg, logger)
     elif cfg.mode == 'base':
-        from sim.sim_base import RegularSimulator
+        from pipelines.pipeline_base import RegularPipeline
         logger.warning("Using base mode.")
-        sim = RegularSimulator(cfg, logger)
+        pipeline = RegularPipeline(cfg, logger)
     elif cfg.mode == 'dspy-json':
         cfg.enable_dspy_optimization = True
         optimized_file = os.path.join(cfg.model.dspy_optimized_dir,
@@ -160,14 +160,14 @@ def main(cfg) -> None:
             optimized_file), f"DSpy optimization file must exist. Not found: {optimized_file}"
         cfg.model.dspy_optimized_file = optimized_file
         logger.info(f"Using optimized topic detector from: {optimized_file}")
-        from sim.sim_dspy import DSpySimulator
-        sim = DSpySimulator(cfg, logger, dspy_datasets=None)
+        from pipelines.pipeline_dspy import DSpyPipeline
+        pipeline = DSpyPipeline(cfg, logger, dspy_datasets=None)
         is_dspy = True
     elif cfg.mode == 'dspy-base':
         # Using the dspy framework but not using the optimized detector
         cfg.enable_dspy_optimization = False
-        from sim.sim_dspy import DSpySimulator
-        sim = DSpySimulator(cfg, logger, dspy_datasets=None)
+        from pipelines.pipeline_dspy import DSpyPipeline
+        pipeline = DSpyPipeline(cfg, logger, dspy_datasets=None)
         is_dspy = True
     else:
         raise RuntimeError(f"Unsupported mode: {cfg.mode}")
@@ -185,7 +185,7 @@ def main(cfg) -> None:
         answers_file_path = os.path.join(cfg.data.data.answers_dir, f'{model_id}.jsonl')
         if os.path.exists(answers_file_path):
             os.remove(answers_file_path)
-        for ans_json in process_questions_parallel(sim, questions, model_id, is_dspy, cfg.max_workers):
+        for ans_json in process_questions_parallel(pipeline, questions, model_id, is_dspy, cfg.max_workers):
             print(ans_json, '\n\n\n')
             with open(answers_file_path, 'a') as f:
                 f.write(json.dumps(ans_json) + "\n")

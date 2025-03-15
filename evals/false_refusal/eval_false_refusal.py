@@ -178,7 +178,7 @@ if __name__ == "__main__":
     parser.add_argument('--num-samples', type=int, help='Number of samples to process.')
     parser.add_argument('--seed', type=int, default=123, help='Random seed for sampling.')
     parser.add_argument('--batch-size', type=int, default=128, help='Batch size for processing.')
-    parser.add_argument('--api-base', type=str, default="http://localhost:11110/v1")
+    parser.add_argument('--api-base', type=str, default="http://localhost:11900/v1")
     parser.add_argument('--model-provider', type=str, default="openai")
     parser.add_argument('--max-workers', type=int, default=256)
     parser.add_argument('--is-thinking-model', action='store_true',
