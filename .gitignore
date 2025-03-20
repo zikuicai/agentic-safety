@@ -80,3 +80,9 @@ target/
 
 
 outputs/
+*.sh
+*.slurm
+evals/**/model_responses
+evals/**/model_evals
+evals/**/response
+evals/**/eval

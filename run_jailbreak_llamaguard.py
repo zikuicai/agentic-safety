@@ -50,7 +50,7 @@ def main(cfg: DictConfig) -> None:
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     model_basename = cfg.model.model_name.split('/')[-1]
     os.makedirs(output_root, exist_ok=True)
-    output_file_basename = f'{benchmark}_responses_{timestamp}_{model_basename}'
+    output_file_basename = f'llamaguard_{benchmark}_responses_{timestamp}_{model_basename}'
     output_file = os.path.join(output_root, f'{output_file_basename}.csv')
 
     test_df = pd.read_csv(cfg.data.data.test_file)
@@ -68,8 +68,8 @@ def main(cfg: DictConfig) -> None:
     pipeline.print_stats(results, len(test_df), output_file)
 
     # Call the run_evaluation function
-    run_evaluation(benchmark, input_path=output_file, output_dir=os.path.join('evals', benchmark, 'model_evals'),
-                   model=cfg.model.evals_model_name, api_base=cfg.model.evals_api_base)
+    # run_evaluation(benchmark, input_path=output_file, output_dir=os.path.join('evals', benchmark, 'model_evals'),
+    #                model=cfg.model.evals_model_name, api_base=cfg.model.evals_api_base)
 
 
 if __name__ == "__main__":

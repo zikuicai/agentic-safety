@@ -41,7 +41,7 @@ inference-time defenses that surpass traditional static model modifications.
 - Jailbreak Runs:
   - `run_jailbreak_baseline.py`: Script for running the jailbreak experiments using the baseline model
   - `run_jailbreak_llamaguard.py`: Script for running the jailbreak experiments using the Llama-Guard model
-  - `run_jailbreak.py`: Script for running jailbreak experiments using the AegisLLM pipeline
+  - `run_jailbreak_dspy.py`: Script for running jailbreak experiments using the AegisLLM pipeline (optimized with DSPy)
 
 ## Setup
 
@@ -127,7 +127,7 @@ python3 run_jailbreak_llamaguard.py +data=<false_refusal | strong_reject> +defen
 3. **Jailbreak (AegisLLM):** You must choose mode based on your experimental setup. A limited set of modes is currently supported.
 
 ```sh
-python3 run_jailbreak.py +data=<false_refusal | strong_reject> +defense=<jail_false_refusal | jail_strong_reject> mode=<dspy-base | dspy-json>
+python3 run_jailbreak_dspy.py +data=<false_refusal | strong_reject> +defense=<jail_false_refusal | jail_strong_reject> mode=<dspy-base | dspy-json>
 ```
 
 ## License

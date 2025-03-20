@@ -4,10 +4,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 import time
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 import argparse
 from agents.agent import Agent
 from utils.logging import setup_logger
+
 
 def get_completion(args):
     gen_model, question, response, is_thinking_model, model_provider, api_base = args
@@ -159,6 +161,8 @@ def main(args) -> None:
                 f"{label}: {ratio:.1%} ({count}/{batch_total}) \t {acc_ratio:.1%} ({accumulated_counts[label]}/{accumulated_total})")
 
     df["gpt4_label"] = all_results
+
+    os.makedirs(Path(args.output_path).parent, exist_ok=True)
     df.to_csv(args.output_path, index=False)
 
     # Print statistics

@@ -45,7 +45,8 @@ def optimize_orchestrator(orchestrator, logger: logging.Logger, safety_trainset,
     optimized_orchestrator = optimizer.compile(
         orchestrator,
         trainset=safety_trainset,
-        valset=safety_valset
+        valset=safety_valset,
+        requires_permission_to_run=False
     )
 
     return optimized_orchestrator

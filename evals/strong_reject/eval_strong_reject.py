@@ -16,6 +16,8 @@ def main(input_path: str, output_path: str, batch_size: int):
     eval_dataset = evaluate_dataset(dataset, ['strongreject_finetuned'], batch_size=batch_size)
 
     result_df = eval_dataset.to_pandas()
+
+    os.makedirs(Path(output_path).parent, exist_ok=True)
     result_df.to_csv(output_path, index=False)
 
     print(result_df)
