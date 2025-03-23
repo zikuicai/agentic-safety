@@ -1,6 +1,6 @@
 import logging
 
-from dspy_modules.custom_adapters import CustomAdapter
+from pipeline_modules.custom_adapters import CustomAdapter
 from dspy.predict.predict import *
 
 

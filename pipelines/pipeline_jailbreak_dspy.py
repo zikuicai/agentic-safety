@@ -3,7 +3,7 @@ import logging
 from copy import deepcopy
 import dspy
 from pipelines.pipeline_abs import Pipeline
-from dspy_modules.sim_modules_jailbreak import Orchestrator, QuestionAnalyzer, Responder, Deflector, Evaluator
+from pipeline_modules.sim_modules_jailbreak import Orchestrator, QuestionAnalyzer, Responder, Deflector, Evaluator
 
 
 def optimize_module(module, logger: logging.Logger, safety_trainset, safety_valset,

@@ -3,7 +3,7 @@ import os
 
 import dspy
 
-from dspy_modules.sim_modules import Orchestrator, QuestionAnalyzer, InputSanitizer, Responder, DictResponder, \
+from pipeline_modules.sim_modules_unlearning import Orchestrator, QuestionAnalyzer, InputSanitizer, Responder, DictResponder, \
     Deflector, \
     Evaluator
 from pipelines.pipeline_abs import Pipeline

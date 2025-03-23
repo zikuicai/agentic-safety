@@ -4,7 +4,7 @@ import os
 from agents.agent import Agent
 from pydantic import BaseModel, Field, constr
 
-from dspy_modules.sim_modules import DictResponder
+from pipeline_modules.sim_modules_unlearning import DictResponder
 from pipelines.pipeline_abs import Pipeline
 from utils.litellm_utils import get_response_content
 
