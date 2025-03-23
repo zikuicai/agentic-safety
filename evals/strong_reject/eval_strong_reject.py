@@ -10,6 +10,9 @@ from dotenv import load_dotenv
 def main(input_path: str, output_path: str, batch_size: int):
     # original_df = pd.read_csv("strongreject_small_jailbreak.csv")
     eval_df = pd.read_csv(input_path)
+    print(eval_df)
+    print(eval_df.isnull().values.sum())
+    eval_df = eval_df.dropna()
 
     dataset = Dataset.from_pandas(eval_df)
     print(dataset)

@@ -3,14 +3,14 @@ import os
 
 import dspy
 
-from dspy_modules.sim_modules import TopicDetector, QuestionAnalyzer, InputSanitizer, Responder, DictResponder, \
+from dspy_modules.sim_modules import Orchestrator, QuestionAnalyzer, InputSanitizer, Responder, DictResponder, \
     Deflector, \
-    ResponseFilter
+    Evaluator
 from pipelines.pipeline_abs import Pipeline
 
 
-def optimize_topic_detector(topic_detector: TopicDetector, logger: logging.Logger, dspy_trainset,
-                            dspy_valset, autorun_mode: str) -> TopicDetector:
+def optimize_orchestrator(orchestrator: Orchestrator, logger: logging.Logger, dspy_trainset,
+                          dspy_valset, autorun_mode: str) -> Orchestrator:
     # Define accuracy metric
     def accuracy_metric(gold, pred, trace=None):
         match = gold.is_related.lower() == str(pred).lower()
@@ -27,7 +27,7 @@ def optimize_topic_detector(topic_detector: TopicDetector, logger: logging.Logge
 
     # Compile and optimize
     optimized_detector = optimizer.compile(
-        topic_detector,
+        orchestrator,
         trainset=dspy_trainset,
         valset=dspy_valset,
         requires_permission_to_run=False,
@@ -37,18 +37,18 @@ def optimize_topic_detector(topic_detector: TopicDetector, logger: logging.Logge
     return optimized_detector
 
 
-def optimize_topic_detector_once(topic_detector: TopicDetector, dspy_trainset, dspy_valset, logger: logging.Logger,
-                                 optimized_file, MIPRO_autorun_mode: str, force_retrain=False) -> TopicDetector:
-    optimized_detector = topic_detector
+def optimize_orchestrator_once(orchestrator: Orchestrator, dspy_trainset, dspy_valset, logger: logging.Logger,
+                               optimized_file, MIPRO_autorun_mode: str, force_retrain=False) -> Orchestrator:
+    optimized_detector = orchestrator
     if not force_retrain and os.path.exists(optimized_file):
         optimized_detector.load(optimized_file)
-        logger.info(f"Using optimized topic detector from: {optimized_file}")
+        logger.info(f"Using optimized Orchestrator from: {optimized_file}")
     else:
         assert dspy_trainset is not None and dspy_valset is not None, "Training and validation sets must not be None."
 
-        logger.info("Optimizing topic detector...")
-        optimized_detector = optimize_topic_detector(topic_detector, logger, dspy_trainset, dspy_valset,
-                                                     autorun_mode=MIPRO_autorun_mode)
+        logger.info("Optimizing Orchestrator...")
+        optimized_detector = optimize_orchestrator(orchestrator, logger, dspy_trainset, dspy_valset,
+                                                   autorun_mode=MIPRO_autorun_mode)
         optimized_detector.save(optimized_file, save_program=False)
 
     assert optimized_detector is not None, "Optimized detector cannot be None."
@@ -84,7 +84,7 @@ class DSpyPipeline(Pipeline):
 
         self.unlearning_config = cfg.defense
         # Detects whether the input is related to the unlearning topics to be randomly responded to or not
-        self.topic_detector = TopicDetector(self.unlearning_config, logger=self.logger)
+        self.orchestrator = Orchestrator(self.unlearning_config, logger=self.logger)
 
         # Sanitizes the user input from any prompt injection or system behavior override attacks
         self.sanitizer = InputSanitizer(logger=self.logger)
@@ -109,7 +109,7 @@ class DSpyPipeline(Pipeline):
         self.deflector = Deflector(self.unlearning_config, seed=cfg.seed, logger=self.logger)
 
         # The final response filterer providing a safer gateway for the final responses out of the system
-        self.response_filter = ResponseFilter(self.unlearning_config, logger=self.logger)
+        self.evaluator = Evaluator(self.unlearning_config, logger=self.logger)
 
         # Statistics tracking
         self.stats = {
@@ -126,11 +126,11 @@ class DSpyPipeline(Pipeline):
             self.run_optimize(force_retrain=False)
 
     def run_optimize(self, force_retrain):
-        self.topic_detector = optimize_topic_detector_once(self.topic_detector, self.dspy_trainset,
-                                                           self.dspy_valset, self.logger,
-                                                           self.cfg.model.dspy_optimized_file,
-                                                           self.cfg.model.dspy_MIPRO_autorun_mode,
-                                                           force_retrain=force_retrain)
+        self.orchestrator = optimize_orchestrator_once(self.orchestrator, self.dspy_trainset,
+                                                       self.dspy_valset, self.logger,
+                                                       self.cfg.model.dspy_optimized_file,
+                                                       self.cfg.model.dspy_MIPRO_autorun_mode,
+                                                       force_retrain=force_retrain)
 
     def run(self, input_text: str) -> str:
         """
@@ -165,7 +165,7 @@ class DSpyPipeline(Pipeline):
         self.logger.debug(f"Sanitized input: {sanitized_input}")
 
         # Step 3: Check if topic-related
-        is_topic_related = self.topic_detector(sanitized_input)
+        is_topic_related = self.orchestrator(sanitized_input)
         self.logger.debug(f"Is topic related: {is_topic_related}")
 
         if is_topic_related:
@@ -180,7 +180,7 @@ class DSpyPipeline(Pipeline):
 
             # Validate and filter response
             if question_type != "multiple_choice":
-                is_safe, reason = self.response_filter(sanitized_input, response)
+                is_safe, reason = self.evaluator(sanitized_input, response)
                 if not is_safe:
                     response = self.deflector(sanitized_input, question_type)
 

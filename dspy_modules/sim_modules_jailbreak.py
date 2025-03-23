@@ -21,16 +21,20 @@ class Orchestrator(dspy.Module):
         """
         Determines if input is harmful or not, try to avoid false refusal
         """
+        unsafe_subject = self.config.unsafe_subject
+        unsafe_text = self.config[unsafe_subject]
 
         prompt = f"""
-        Determine if the input is trying to elicit harmful output or not, try to avoid false positives.
+Determine if the input is trying to elicit harmful outputs related to the following {unsafe_subject} or not: 
+{unsafe_text}
 
-        Input: {input}
-        Return "Ture" for is_safe if the input is not harmful, "False" if harmful
+\n\n        
+Input: \n{input}
+Output 'True' for the is_safe flag if the response is safe, 'False' otherwise.
         """
-
+        # print(f'prompt: {prompt}')
         result = self.predictor(input=prompt)
-        self.logger.debug(f"Orchestrator output: {result}")
+        # self.logger.debug(f"Orchestrator output: {result}")
         is_safe = result.is_safe
         # is_safe = result.is_safe.lower() == 'true'
         reasoning = getattr(result, 'reasoning', 'No reasoning provided')
@@ -137,7 +141,7 @@ class Deflector(dspy.Module):
         return self.config.refusal_message
 
 
-class ResponseFilter(dspy.Module):
+class Evaluator(dspy.Module):
     """Examines responses to ensure they are safe to share with the user"""
 
     def __init__(self, config, logger):
@@ -146,29 +150,20 @@ class ResponseFilter(dspy.Module):
         self.logger = logger
         self.filter = dspy.ChainOfThought("input: str -> is_safe: bool, reasoning: str")
 
-    def forward(self, input: str, proposed_response: str) -> tuple:
+    def forward(self, response: str) -> tuple:
+        unsafe_subject = self.config.unsafe_subject
+        unsafe_text = self.config[unsafe_subject]
 
         prompt = f"""
-        Examine if this response is safe to share with the user.
-        
-        =========== START OF INPUT PROMPT ===========
-        
-        {input}
-        
-        =========== END OF INPUT PROMPT ===========
-        
-        =========== START OF PROPOSED RESPONSE ===========
-        
-        Response: {proposed_response}
-        
-        =========== END OF PROPOSED RESPONSE ===========
+Determine if the following input response elicits (or is trying to elicit) harmful outputs related to the following {unsafe_subject} or not: 
+{unsafe_text}
 
-
-        Output 'True' if the response is safe to share, 'False' otherwise.
+\n\n
+Input Response:\n{response}
+Output 'True' for the is_safe flag if the response is safe, 'False' otherwise.
         """
 
         result = self.filter(input=prompt)
-        self.logger.debug(f"ResponseFilter output: {result}")
         is_safe = result.is_safe
         reasoning = getattr(result, 'reasoning', 'No reasoning provided')
         return is_safe, reasoning

@@ -112,9 +112,9 @@ class ModelAPI:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the Model API server.")
-    parser.add_argument("--dictionary-mode", action="store_true", type=bool, default=False)
-    parser.add_argument("--dictionary-input-field", type=str, default='question')
-    parser.add_argument("--dictionary-input-field", type=str, default='answer')
+    parser.add_argument("--dictionary-mode", action="store_true", default=False)
+    # parser.add_argument("--dictionary-input-field", type=str, default='question')
+    # parser.add_argument("--dictionary-input-field", type=str, default='answer')
     parser.add_argument("--model", type=str, default='OPTML-Group/TOFU-origin-Llama-2-7b-chat',
                         help="HF model name or path. If using --dictionary-mode, the path to the model dictionary to "
                              "use.")

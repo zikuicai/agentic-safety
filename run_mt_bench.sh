@@ -3,7 +3,7 @@
 BASE_PORT=11110
 
 MODES=("base" "prompting" "filtering" "dspy-base" "dspy-json")
-CUDA_DEVICES="0,1,2,3,4,5,6,7"
+CUDA_DEVICES="0,1,2,3"
 
 PIDS=()
 
@@ -13,14 +13,14 @@ if [ -z "$MODEL" ]; then
   exit 1
 fi
 
-check_vllm_online() {
+wait_for_llm() {
   while ! nc -z localhost $BASE_PORT; do
     echo "Waiting for vLLM to come online..."
     sleep 5
   done
   echo "vLLM is online."
 }
-check_vllm_online
+wait_for_llm
 
 run="mt_bench"
 for mode in "${MODES[@]}"; do

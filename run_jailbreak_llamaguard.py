@@ -43,7 +43,7 @@ def main(cfg: DictConfig) -> None:
 
     pipeline = JailbreakPipeline(cfg, logger)
 
-    benchmark = benchmark = cfg.data.data.name
+    benchmark = cfg.data.data.name
     output_root = os.path.join('evals', benchmark, 'model_responses')
     max_workers = cfg.max_workers
 

@@ -1,15 +1,15 @@
 import os
 import logging
-
+from copy import deepcopy
 import dspy
 from pipelines.pipeline_abs import Pipeline
-from dspy_modules.sim_modules_jailbreak import Orchestrator, QuestionAnalyzer, Responder, Deflector, ResponseFilter
+from dspy_modules.sim_modules_jailbreak import Orchestrator, QuestionAnalyzer, Responder, Deflector, Evaluator
 
 
-def optimize_orchestrator(orchestrator, logger: logging.Logger, safety_trainset, safety_valset,
-                          autorun_mode: str) -> Orchestrator:
+def optimize_module(module, logger: logging.Logger, safety_trainset, safety_valset,
+                    autorun_mode: str) -> dspy.Module:
     # Define shared safety evaluation metric
-    def orchestrator_safety_metric(gold, pred, trace=None):
+    def safety_metric(gold, pred, trace=None):
         logger.debug(f"Pred: {pred}")
         is_safe, reasoning = pred
         logger.debug(f"is_safe: {is_safe}, ")
@@ -35,45 +35,45 @@ def optimize_orchestrator(orchestrator, logger: logging.Logger, safety_trainset,
 
     # Create optimizer
     optimizer = dspy.MIPROv2(
-        metric=orchestrator_safety_metric,
+        metric=safety_metric,
         num_threads=256,
         auto=autorun_mode
     )
 
     # Compile and optimize
-    logger.info("Optimizing orchestrator...")
+    logger.info("Optimizing module...")
     optimized_orchestrator = optimizer.compile(
-        orchestrator,
+        module,
         trainset=safety_trainset,
         valset=safety_valset,
-        requires_permission_to_run=False
+        requires_permission_to_run=False,
     )
 
     return optimized_orchestrator
 
 
-def optimize_orchestrator_once(orchestrator, safety_trainset, safety_valset, logger: logging.Logger,
-                               optimized_file, MIPRO_autorun_mode: str, force_retrain=False) -> Orchestrator:
-    optimized_orchestrator = orchestrator
+def optimize_module_once(module, safety_trainset, safety_valset, logger: logging.Logger,
+                         optimized_file, MIPRO_autorun_mode: str, force_retrain=False) -> dspy.Module:
+    optimized_module = deepcopy(module)
     if not force_retrain and os.path.exists(optimized_file):
-        optimized_orchestrator.load(optimized_file)
-        logger.info(f"Using optimized orchestrator from: {optimized_file}")
+        optimized_module.load(optimized_file)
+        logger.info(f"Using optimized module from: {optimized_file}")
     else:
         assert safety_trainset is not None and safety_valset is not None, "Training and validation sets must not be None."
 
-        logger.info("Optimizing orchestrator...")
-        optimized_orchestrator = optimize_orchestrator(orchestrator, logger, safety_trainset, safety_valset,
-                                                       autorun_mode=MIPRO_autorun_mode)
-        optimized_orchestrator.save(optimized_file, save_program=False)
+        logger.info("Optimizing module...")
+        optimized_module = optimize_module(optimized_module, logger, safety_trainset, safety_valset,
+                                           autorun_mode=MIPRO_autorun_mode)
+        optimized_module.save(optimized_file, save_program=False)
 
-    assert optimized_orchestrator is not None, "Optimized orchestrator cannot be None."
-    return optimized_orchestrator
+    assert optimized_module is not None, "Optimized module cannot be None."
+    return optimized_module
 
 
 class DSpyPipeline(Pipeline):
     """Main system that orchestrates all components"""
 
-    def __init__(self, cfg, logger: logging.Logger, dspy_datasets: tuple = None, use_separate_responder_lm=False,
+    def __init__(self, cfg, logger: logging.Logger, use_separate_responder_lm=False,
                  use_non_parsing_generator=False,
                  responder_lm_conf=None):
         super().__init__(cfg)
@@ -97,11 +97,8 @@ class DSpyPipeline(Pipeline):
             self.responder_lm = dspy.LM(**self.responder_lm_conf)
 
         self.defense_config = cfg.defense
-        self.dspy_trainset, self.dspy_valset = None, None
-        if cfg.enable_dspy_optimization == True and dspy_datasets is not None:
-            assert len(dspy_datasets) == 2
-            self.dspy_trainset = dspy_datasets[0]
-            self.dspy_valset = dspy_datasets[1]
+        self.dspy_trainset_orchestrator, self.dspy_valset_orchestrator = None, None
+        self.dspy_trainset_evaluator, self.dspy_valset_evaluator = None, None
 
         # Detects whether the input is related to the unlearning topics to be randomly responded to or not
         self.orchestrator = Orchestrator(self.defense_config, logger=self.logger)
@@ -115,8 +112,8 @@ class DSpyPipeline(Pipeline):
 
         self.deflector = Deflector(self.defense_config, seed=cfg.seed, logger=self.logger)
 
-        # The final response filterer providing a safer gateway for the final responses out of the system
-        self.response_filter = ResponseFilter(self.defense_config, logger=self.logger)
+        # The final evaluator (response filter) providing a safer gateway for the final responses out of the system
+        self.evaluator = Evaluator(self.defense_config, logger=self.logger)
 
         # Statistics tracking
         self.stats = {
@@ -132,8 +129,14 @@ class DSpyPipeline(Pipeline):
             'retry_reasons': [],
         }
 
-        if cfg.enable_dspy_optimization and dspy_datasets:
+        if cfg.enable_dspy_optimization:
             self.run_optimize(force_retrain=False)
+
+    def set_orchestrator_dspy_datasets(self, ds):
+        self.dspy_trainset_orchestrator, self.dspy_valset_orchestrator = ds
+
+    def set_evaluator_dspy_datasets(self, ds):
+        self.dspy_trainset_evaluator, self.dspy_valset_evaluator = ds
 
     def run(self, input: str):
         # output response, and is_deflected
@@ -145,8 +148,8 @@ class DSpyPipeline(Pipeline):
 
         # Initial orchestration
         is_safe, orchestrator_reason = self.orchestrator(input)
-        self.logger.debug(f"Is input safe: {is_safe}")
-        self.logger.debug(f"Orchestrator reasoning: {orchestrator_reason}")
+        # self.logger.debug(f"Is input safe: {is_safe}")
+        # self.logger.debug(f"Orchestrator reasoning: {orchestrator_reason}")
 
         if not is_safe:
             response = self.deflector(input, question_type)
@@ -165,9 +168,9 @@ class DSpyPipeline(Pipeline):
             return response, False
 
         # Evaluate response
-        is_safe, filter_reason = self.response_filter(input, response)
-        self.logger.debug(f"Is response safe: {is_safe}")
-        self.logger.debug(f"Response_filter reasoning: {filter_reason}")
+        is_safe, filter_reason = self.evaluator(response)
+        # self.logger.debug(f"Is response safe: {is_safe}")
+        # self.logger.debug(f"Response_filter reasoning: {filter_reason}")
 
         if not is_safe:
             self.stats['flagged_stage2'] += 1
@@ -178,8 +181,18 @@ class DSpyPipeline(Pipeline):
         return response, False
 
     def run_optimize(self, force_retrain):
-        self.topic_detector = optimize_orchestrator_once(self.orchestrator, self.dspy_trainset,
-                                                         self.dspy_valset, self.logger,
-                                                         self.cfg.model.dspy_optimized_file,
-                                                         self.cfg.model.dspy_MIPRO_autorun_mode,
-                                                         force_retrain=force_retrain)
+        # Orchestrator optimization
+        self.logger.info("Running or loading optimization for Orchestrator...")
+        self.orchestrator = optimize_module_once(self.orchestrator, self.dspy_trainset_orchestrator,
+                                                 self.dspy_valset_orchestrator, self.logger,
+                                                 self.cfg.model.dspy_optimized_file_orchestrator,
+                                                 self.cfg.model.dspy_MIPRO_autorun_mode,
+                                                 force_retrain=force_retrain)
+
+        # Evaluator optimization
+        self.logger.info("Running or loading optimization for Evaluator...")
+        self.evaluator = optimize_module_once(self.evaluator, self.dspy_trainset_evaluator,
+                                              self.dspy_valset_evaluator, self.logger,
+                                              self.cfg.model.dspy_optimized_file_evaluator,
+                                              self.cfg.model.dspy_MIPRO_autorun_mode,
+                                              force_retrain=force_retrain)

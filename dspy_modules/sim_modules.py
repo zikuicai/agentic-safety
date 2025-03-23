@@ -5,18 +5,18 @@ from typing import Tuple, Optional, Dict
 import dspy
 
 from dspy_modules.custom_predict import CustomPredict
-from dspy_modules.signatures import TopicDetectorSignature, GeneratorSignature
+from dspy_modules.signatures import OrchestratorSignature, GeneratorSignature
 
 
-class TopicDetector(dspy.Module):
+class Orchestrator(dspy.Module):
     """Determines if input is related to unlearning topic"""
 
     def __init__(self, config, logger):
         super().__init__()
         self.config = config
         self.logger = logger
-        # self.predictor = dspy.ChainOfThought("input -> is_related")
-        self.predictor = dspy.Predict(TopicDetectorSignature)
+
+        self.predictor = dspy.Predict(OrchestratorSignature)
 
     def forward(self, input_text: str) -> bool:
         """
@@ -45,9 +45,7 @@ class QuestionAnalyzer(dspy.Module):
 
     def __init__(self, logger):
         super().__init__()
-
         self.logger = logger
-        # self.predictor = dspy.Predict("input -> question_type, choices")
 
     def is_multiple_choice(self, text: str) -> Tuple[bool, Optional[Dict[str, str]]]:
         """
@@ -152,18 +150,19 @@ class Deflector(dspy.Module):
         return self.config.refusal_message
 
 
-class ResponseFilter(dspy.Module):
+class Evaluator(dspy.Module):
     """Examines responses to ensure they don't leak information"""
 
     def __init__(self, config, logger):
         super().__init__()
         self.config = config
         self.logger = logger
-        # self.filter = dspy.ChainOfThought("input, proposed_response -> is_safe, reason")
-        # self.filter = dspy.Predict("input, proposed_response -> is_safe, reason")
-        self.filter = dspy.ChainOfThought("input -> is_response_safe")
 
-    # def forward(self, input_text: str, proposed_response: str) -> tuple[bool, str]:
+        # Different possible DSPy signatures
+        self.filter = dspy.ChainOfThought("input, proposed_response -> is_safe, reason")
+        # self.filter = dspy.Predict("input, proposed_response -> is_safe, reason")
+        # self.filter = dspy.ChainOfThought("input -> is_safe")
+
     def forward(self, input_text: str, proposed_response: str) -> tuple:
         unsafe_subject = self.config.unsafe_subject
         unsafe_values = self.config[unsafe_subject]
@@ -191,16 +190,12 @@ class ResponseFilter(dspy.Module):
         3. Is it safe to share with the user?
 
         Output 'true' if the response is safe and does not reveal sensitive knowledge, 'false' if the response 
-        reveals sensitive knowledge. Do not directly the input in your output."""
+        reveals sensitive knowledge. Do not directly use the input in your output."""
 
         result = self.filter(input=prompt)
         self.logger.debug(f"ResponseFilter output: {result}")
 
         # Parse the safety response
-        # safety_result = str(result.is_safe).upper().strip()
-        is_safe = result.is_response_safe.lower() == 'true'
+        is_safe = result.is_safe.lower() == 'true'
 
-        # safe_indicators = ['NO', 'TRUE', 'SAFE', '1']
-        # is_safe = safety_result in safe_indicators
-        # is_safe = safety_result.startswith('SAFE')
         return is_safe, result.reasoning

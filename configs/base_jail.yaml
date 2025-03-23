@@ -18,17 +18,25 @@ mode: null
 
 hf_cache_dir: .run/.cache/hf
 
-max_workers: 256
+max_workers: 512
 
 model:
   model_provider: "openai"
 
   model_name: "meta-llama/Meta-Llama-3-8B-Instruct"
+#  model_name: "meta-llama/Llama-3.1-8B-Instruct"
+#  model_name: "JINJIN7987/llama3-8b-refusal-vpi"
+#  model_name: "Orenguteng/Llama-3-8B-Lexi-Uncensored"
+#  model_name: "lapisrocks/Llama-3-8B-Instruct-TAR-Refusal"
+#  model_name: "GraySwanAI/Llama-3-8B-Instruct-RR"
+#  model_name: "LLM-LAT/robust-llama3-8b-instruct"
+
   guard_model_name: "meta-llama/Llama-Guard-3-8B"
   evals_model_name: "Qwen/Qwen2.5-72B-Instruct"
 
   api_base: http://localhost:11110/v1
-  guard_api_base: http://localhost:11111/v1
+#  api_base: http://localhost:11111/v1
+  guard_api_base: http://localhost:11900/v1
   evals_api_base: http://localhost:11900/v1
 
   #  triton_cache_dir: /p/vast1/cai6/tmp/
@@ -37,7 +45,10 @@ model:
   temperature: 1.0
 
   dspy_optimized_file_postfix: "-miprov2_optimized.json"
-  dspy_optimized_dir: "optimized-jail-${model.dspy_MIPRO_autorun_mode}"
+  dspy_dataset_file_postfix: "-dspy-dataset.json"
+  dspy_optimized_dir: "optimized-jail-${model.dspy_MIPRO_autorun_mode}/"
   dspy_MIPRO_autorun_mode: "light"
   # Assigned dynamically at runtime (not as command line arg)
-  dspy_optimized_file: null
+  evaluator_optimization_datasets_file: null
+  dspy_optimized_file_orchestrator: null
+  dspy_optimized_file_evaluator: null

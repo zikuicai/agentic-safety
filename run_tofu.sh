@@ -1,10 +1,9 @@
 #!/bin/bash
 
 BASE_PORT=11110
-TMP_CONFIG_DIR="configs.tmp"
 
 MODES=("filtering" "dspy-base")
-CUDA_DEVICES="0,1,2,3,4,5,6,7"
+CUDA_DEVICES="0,1,2,3"
 
 PIDS=()
 
@@ -20,14 +19,14 @@ if [ -z "$SUBSET" ]; then
   exit 1
 fi
 
-check_vllm_online() {
+wait_for_llm() {
   while ! nc -z localhost $BASE_PORT; do
     echo "Waiting for vLLM to come online..."
     sleep 5
   done
   echo "vLLM is online."
 }
-check_vllm_online
+wait_for_llm
 
 run="tofu"
 for mode in "${MODES[@]}"; do

@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+import concurrent.futures
 import os
 import time
 import hydra
@@ -8,6 +9,7 @@ import random
 from typing import List, Tuple
 import pandas as pd
 import dspy
+import pickle
 
 
 def prepare_training_data(
@@ -50,35 +52,144 @@ def prepare_training_data(
     return train_examples, val_examples
 
 
+def update_evaluator_dataset(file_path) -> None:
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"The file {file_path} does not exist.")
+
+    # Load the dataset
+    with open(file_path, 'rb') as f:
+        transformed_trainset, transformed_valset = pickle.load(f)
+
+    # Update each example in the datasets
+    transformed_trainset = [example.with_inputs('input', 'response') for example in transformed_trainset]
+    transformed_valset = [example.with_inputs('input', 'response') for example in transformed_valset]
+
+    # Save the updated dataset back to disk
+    with open(file_path, 'wb') as f:
+        pickle.dump((transformed_trainset, transformed_valset), f)
+
+
+def prepare_evaluator_training_ds(pipeline: DSpyPipeline, input_ds: tuple, logger, max_workers: int, save_path,
+                                  force_regenerate=False) -> Tuple[
+    List[dspy.Example], List[dspy.Example]]:
+    def process_example(pipeline, example, logger):
+        input_text = example.input
+        question_type, _ = pipeline.question_analyzer.forward(input_text)
+        response = pipeline.responder.forward(input_text, question_type)
+        is_safe = "true" if example.is_safe.lower() == "true" else "false"
+        logger.debug(f"Responder output: {response}, is_safe: {is_safe}")
+        return dspy.Example(input=input_text, response=response, is_safe=is_safe).with_inputs('input', 'response')
+
+    was_loaded = False
+    if not force_regenerate and save_path is not None and os.path.exists(save_path):
+        try:
+            with open(save_path, 'rb') as f:
+                loaded_data = pickle.load(f)
+            was_loaded = True
+        except Exception as e:
+            logger.warning(f"Failed to load saved datasets: {e}")
+
+        if was_loaded:
+            try:
+                assert isinstance(loaded_data, tuple) and len(loaded_data) == 2, "Invalid loaded datasets."
+                assert all(isinstance(example, dspy.Example) for example in loaded_data[0]), "Invalid loaded trainset."
+                assert all(isinstance(example, dspy.Example) for example in loaded_data[1]), "Invalid loaded valset."
+                transformed_trainset, transformed_valset = loaded_data
+            except:
+                logger.warning("Invalid loaded datasets. Regenerating datasets for the evaluator module...")
+                was_loaded = False
+
+    if not was_loaded:
+        input_trainset, input_valset = input_ds
+        assert isinstance(input_trainset, list) and len(
+            input_trainset) > 0, "Invalid input_trainset provided. Not a list or empty."
+        assert isinstance(input_valset, list) and len(
+            input_valset) > 0, "Invalid input_valset provided. Not a list or empty."
+        assert all(isinstance(example, dspy.Example) for example in
+                   input_trainset), "Invalid input_trainset provided. Not a list of dspy.Example."
+        assert all(isinstance(example, dspy.Example) for example in
+                   input_valset), "Invalid input_valset provided. Not a list of dspy.Example."
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            train_futures = [executor.submit(process_example, pipeline, example, logger) for example in input_trainset]
+            val_futures = [executor.submit(process_example, pipeline, example, logger) for example in input_valset]
+
+            transformed_trainset = [future.result() for future in concurrent.futures.as_completed(train_futures)]
+            transformed_valset = [future.result() for future in concurrent.futures.as_completed(val_futures)]
+
+        # Save the transformed datasets to disk
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+        with open(save_path, 'wb') as f:
+            pickle.dump((transformed_trainset, transformed_valset), f)
+    return transformed_trainset, transformed_valset
+
+
 @hydra.main(config_path="configs", config_name="base_jail", version_base="1.2")
 def main(cfg) -> None:
     logger = setup_logger()
-    logger.info(f"Using configuration: {cfg}")
+    # logger.info(f"Using configuration: {cfg}")
 
-    dspy_trainset, dspy_valset = prepare_training_data(
+    with open(cfg.defense.unsafe_file, 'r') as f:
+        unsafe_text = f.read()
+    if unsafe_text is None:
+       raise ValueError("The unsafe_text is None.")
+    cfg.defense[cfg.defense.unsafe_subject] = unsafe_text
+
+    pipeline = DSpyPipeline(cfg, logger)
+
+    # Dynamically set the path for optimized
+    benchmark = cfg.data.data.name
+    cfg.model.dspy_optimized_file_orchestrator = os.path.basename(
+        cfg.model.model_name) + f'-orchestrator' + cfg.model.dspy_optimized_file_postfix
+    cfg.model.dspy_optimized_file_orchestrator = os.path.join(cfg.model.dspy_optimized_dir,
+                                                              cfg.model.dspy_optimized_file_orchestrator)
+
+    cfg.model.dspy_optimized_file_evaluator = os.path.basename(
+        cfg.model.model_name) + f'-evaluator' + cfg.model.dspy_optimized_file_postfix
+    cfg.model.dspy_optimized_file_evaluator = os.path.join(cfg.model.dspy_optimized_dir,
+                                                           cfg.model.dspy_optimized_file_evaluator)
+
+    cfg.model.evaluator_optimization_datasets_file = os.path.basename(
+        cfg.model.model_name) + f'-evaluator' + cfg.model.dspy_dataset_file_postfix
+    cfg.model.evaluator_optimization_datasets_file = os.path.join(cfg.model.dspy_optimized_dir,
+                                                                  cfg.model.evaluator_optimization_datasets_file)
+
+    # Prepare the training and validation data for the Orchestrator optimization
+    dspy_trainset_orchestrator, dspy_valset_orchestrator = prepare_training_data(
         train_file=cfg.data.data.train_file,
         num_examples=50,
         train_ratio=0.2
     )
-    dspy_datasets = (dspy_trainset, dspy_valset)
+    pipeline.set_orchestrator_dspy_datasets(ds=(dspy_trainset_orchestrator, dspy_valset_orchestrator))
 
-    benchmark = cfg.data.data.name
-
-    # Dynamically set the path for optimized
-    cfg.model.dspy_optimized_file = os.path.basename(cfg.model.model_name)+ f'-{benchmark}-' + cfg.model.dspy_optimized_file_postfix
-    cfg.model.dspy_optimized_file = os.path.join(cfg.model.dspy_optimized_dir, cfg.model.dspy_optimized_file)
+    # Prepare the training and validation data for the Orchestrator optimization
+    dspy_trainset_evaluator, dspy_valset_evaluator = prepare_evaluator_training_ds(pipeline=pipeline,
+                                                                                   input_ds=(dspy_trainset_orchestrator,
+                                                                                             dspy_valset_orchestrator),
+                                                                                   logger=logger,
+                                                                                   max_workers=cfg.max_workers,
+                                                                                   save_path=cfg.model.evaluator_optimization_datasets_file,
+                                                                                   force_regenerate=False)
+    pipeline.set_evaluator_dspy_datasets(ds=(dspy_trainset_evaluator, dspy_valset_evaluator))
 
     # Make directories for the optimization outputs
     os.makedirs(cfg.model.dspy_optimized_dir, exist_ok=True)
     cfg.enable_dspy_optimization = True
-    logger.info(f"Using DSPy optimization file: {cfg.model.dspy_optimized_file}")
-    if os.path.exists(cfg.model.dspy_optimized_file):
-        os.rename(cfg.model.dspy_optimized_file,
-                  cfg.model.dspy_optimized_file + '.bac' + str(time.time()).split('.')[0])
-        logger.info(f"Using optimized topic detector from: {cfg.model.dspy_optimized_file}")
+    initialization_time = str(time.time()).split('.')[0]
+    logger.info(f"Using Orchestrator DSPy optimization file: {cfg.model.dspy_optimized_file_orchestrator}")
+    if os.path.exists(cfg.model.dspy_optimized_file_orchestrator):
+        os.rename(cfg.model.dspy_optimized_file_orchestrator,
+                  cfg.model.dspy_optimized_file_orchestrator + '.bac' + initialization_time)
+        logger.info(f"Using optimized Orchestrator from: {cfg.model.dspy_optimized_file_orchestrator}")
 
-    pipeline = DSpyPipeline(cfg, logger, dspy_datasets=dspy_datasets)
+    logger.info(f"Using Evaluator DSPy optimization file: {cfg.model.dspy_optimized_file_evaluator}")
+    if os.path.exists(cfg.model.dspy_optimized_file_evaluator):
+        os.rename(cfg.model.dspy_optimized_file_evaluator,
+                  cfg.model.dspy_optimized_file_evaluator + '.bac' + initialization_time)
+        logger.info(f"Using optimized Evaluator from: {cfg.model.dspy_optimized_file_evaluator}")
+
     pipeline.run_optimize(force_retrain=True)
+    logger.info("Optimization complete.")
 
 
 if __name__ == "__main__":

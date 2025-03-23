@@ -72,16 +72,28 @@ def main(cfg) -> None:
         cfg.enable_dspy_optimization = False
     elif cfg.mode == 'dspy-json':
         cfg.enable_dspy_optimization = True
-        cfg.model.dspy_optimized_file = os.path.basename(
-            cfg.model.model_name) + f'-{benchmark}-' + cfg.model.dspy_optimized_file_postfix
-        cfg.model.dspy_optimized_file = os.path.join(cfg.model.dspy_optimized_dir, cfg.model.dspy_optimized_file)
+        # setup the Orchestrator optimized file
+        cfg.model.dspy_optimized_file_orchestrator = os.path.basename(
+            cfg.model.model_name) + f'-orchestrator' + cfg.model.dspy_optimized_file_postfix
+        cfg.model.dspy_optimized_file_orchestrator = os.path.join(cfg.model.dspy_optimized_dir,
+                                                                  cfg.model.dspy_optimized_file_orchestrator)
         assert os.path.exists(
-            cfg.model.dspy_optimized_file), f"DSpy optimization file must exist. Not found: {cfg.model.dspy_optimized_file}"
-        logger.info(f"Using optimized topic detector from: {cfg.model.dspy_optimized_file}")
+            cfg.model.dspy_optimized_file_orchestrator), f"DSpy optimization file must exist. Not found: {cfg.model.dspy_optimized_file_orchestrator}"
+        logger.info(f"Using optimized Orchestrator from: {cfg.model.dspy_optimized_file_orchestrator}")
+
+        # setup the Evaluator optimized file
+        cfg.model.dspy_optimized_file_evaluator = os.path.basename(
+            cfg.model.model_name) + f'-evaluator' + cfg.model.dspy_optimized_file_postfix
+        cfg.model.dspy_optimized_file_evaluator = os.path.join(cfg.model.dspy_optimized_dir,
+                                                               cfg.model.dspy_optimized_file_evaluator)
+        assert os.path.exists(
+            cfg.model.dspy_optimized_file_evaluator), f"DSpy optimization file must exist. Not found: {cfg.model.dspy_optimized_file_evaluator}"
+        logger.info(f"Using optimized Evaluator from: {cfg.model.dspy_optimized_file_evaluator}")
+
     else:
         raise RuntimeError(f"Unsupported mode: {cfg.mode}")
 
-    pipeline = DSpyPipeline(cfg, logger, dspy_datasets=None)
+    pipeline = DSpyPipeline(cfg, logger)
 
     test_file = cfg.data.data.test_file
     test_df = pd.read_csv(test_file)
@@ -95,11 +107,13 @@ def main(cfg) -> None:
                                    cfg.defense.refusal_message) for data in
                    row_data]
 
-        for future in as_completed(futures):
+        for idx, future in enumerate(as_completed(futures)):
             results.append(future.result())
-            total_questions = pipeline.stats['total_questions']
+            # total_questions = pipeline.stats['total_questions']
+            total_questions = idx + 1
             flagged_stage1 = pipeline.stats['flagged_stage1']
             flagged_stage2 = pipeline.stats['flagged_stage2']
+            stage2_questions = total_questions - flagged_stage1
             deflections = pipeline.stats['deflections']
 
             print(
@@ -107,7 +121,7 @@ def main(cfg) -> None:
             print(
                 Fore.YELLOW + f"Flagged_stage1 = {flagged_stage1}/{total_questions} = {flagged_stage1 / total_questions * 100:.1f}%" + Style.RESET_ALL)
             print(
-                Fore.YELLOW + f"Flagged_stage2 = {flagged_stage2}/{total_questions} = {flagged_stage2 / total_questions * 100:.1f}%" + Style.RESET_ALL)
+                Fore.YELLOW + f"Flagged_stage2 = {flagged_stage2}/{stage2_questions} = {(flagged_stage2 / stage2_questions if stage2_questions != 0 else 1.0) * 100:.1f}%" + Style.RESET_ALL)
 
     response_df = pd.DataFrame(results)
 
@@ -131,4 +145,5 @@ def main(cfg) -> None:
 
 if __name__ == "__main__":
     load_dotenv()
+
     main()
