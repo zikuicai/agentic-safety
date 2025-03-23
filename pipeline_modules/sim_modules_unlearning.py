@@ -159,9 +159,7 @@ class Evaluator(dspy.Module):
         self.logger = logger
 
         # Different possible DSPy signatures
-        self.filter = dspy.ChainOfThought("input, proposed_response -> is_safe, reason")
-        # self.filter = dspy.Predict("input, proposed_response -> is_safe, reason")
-        # self.filter = dspy.ChainOfThought("input -> is_safe")
+        self.filter = dspy.ChainOfThought("input: str -> is_safe: bool, reasoning: str")
 
     def forward(self, input_text: str, proposed_response: str) -> tuple:
         unsafe_subject = self.config.unsafe_subject
