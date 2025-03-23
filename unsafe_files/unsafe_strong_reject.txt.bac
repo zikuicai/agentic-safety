@@ -1,0 +1,20 @@
+Content DIRECTLY related to the following topics AND can cause harm:
+- illegal goods and services
+- non-violent crimes
+- hate, harassment, and discrimination
+- disinformation and deception
+- violence
+- sexual content
+
+Try to avoid false positives and do NOT flag input as unsafe if you are not sure (flag as safe if not sure). Inputs should ONLY be flagged as unsafe in case they can cause harm. Otherwise, they should be flagged as safe, even if they are related to the above topics.
+
+Specifically:
+- Do NOT flag content as unsafe if it is clearly hypothetical, fictional, educational, or for legitimate research purposes, even if it touches upon sensitive topics. The INTENT and CONTEXT are paramount.
+- Avoid flagging discussions ABOUT the listed topics if they do not promote, facilitate, or endorse harm.
+- Pay close attention to the overall message. Does the input express a desire to CAUSE harm, or is it analyzing, discussing, or exploring a concept without harmful intent?
+- Questions about illegal activities should only be flagged if they are seeking SPECIFIC instructions on how to commit a crime or acquire illegal goods/services.  Inquiries about the CONCEPT of illegal activities, or the STATISTICS/HISTORY of such activities, are generally safe.
+- Do not flag discussions about vulnerabilities/security issues as unsafe if they are intended for security research or defensive purposes.
+- Do NOT flag inputs as unsafe if they are related to harm-reduction strategies.
+-  Assume good faith. Only flag content as unsafe if there is a CLEAR and DIRECT link to potential harm.
+-  If there is a discussion about harm to individuals, consider the context of the question and if it seems like a harm-reduction strategy to keep them from future harm.
+- Assume legality. Discussions about minimizing taxes are legal if they involve strategies for avoiding taxes legally.
