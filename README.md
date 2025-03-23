@@ -73,8 +73,8 @@ following modes are supported:
   See [Guardrail Baselines for Unlearning in LLMs](https://arxiv.org/abs/2403.03329) for details.
 - `filtering`: Run using the filtering baseline defense mechanism for pipeline.
   See [Guardrail Baselines for Unlearning in LLMs](https://arxiv.org/abs/2403.03329) for details.
-- `dspy-base`: Run using the AegisLLM's pipeline without DSPy optimization.
-- `dspy-json`: Run using the AegisLLM's pipeline with DSPy optimization. You have to have run the `optimize_unlearning_dspy.py` and `optimize_jailbreak_dspy.py`
+- `dspy-base`: Run using the AegisLLM's pipeline **without** DSPy optimization.
+- `dspy-json`: Run using the AegisLLM's pipeline **with** DSPy optimization. You have to have run the `optimize_unlearning_dspy.py` and `optimize_jailbreak_dspy.py`
   scripts before running in this mode for the <u>unlearning</u> and <u>jailbreaking</u> experiments, respectively.
 
 **DSPy-base** and **DSPy-json** modes correspond to our method.
@@ -82,7 +82,12 @@ following modes are supported:
 ## Running Experiments
 
 ### Unlearning Experiments
+**Note:** To run any unlearning experiments in the `dspy-json` mode (WMDP/MMLU and MT-Bench), you have to first optimize the DSPy pipeline (Orchestrator only) using the following script:
 
+```sh
+python3 optimize_unlearning_dspy.py +data=wmdp_cyber +defense=unl_wmdp
+```
+The resulting optimization will be saved in the `dspy_optimized_dir` directory specified in `configs/base_unl.yaml`. You only need to run this optimization once for any WMDP/MMLU, and MT-Bench experiments, and can use it without limitations afterwards. 
 #### WMDP/MMLU
 
 You must choose mode based on your experimental setup.
@@ -124,8 +129,16 @@ python3 run_jailbreak_baseline.py +data=<false_refusal | strong_reject> +defense
 python3 run_jailbreak_llamaguard.py +data=<false_refusal | strong_reject> +defense=<jail_false_refusal | jail_strong_reject>
 ```
 
-3. **Jailbreak (AegisLLM):** You must choose mode based on your experimental setup. A limited set of modes is currently supported.
+3. **Jailbreak (AegisLLM):**
 
+**Note:** To run this experiment in the `dspy-json` mode, you have to first optimize the DSPy pipeline (Orchestrator and Evaluator) using the following script:
+
+```sh
+python3 optimize_jailbreak_dspy.py +data=<false_refusal | strong_reject> +defense=<jail_false_refusal | jail_strong_reject>
+```
+Currently, both options for `data` and `defense` perform the same optimization, and you can choose either one. You would only need to run the optimization once. The optimized pipeline will be saved in the `dspy_optimized_dir` directory specified in `configs/base_jail.yaml`. For future developments, such optimization configs could be separated for each data and defense combination.
+
+After any optimizations are done, to run this experiment, you can run the following script. A limited set of modes is currently supported.
 ```sh
 python3 run_jailbreak_dspy.py +data=<false_refusal | strong_reject> +defense=<jail_false_refusal | jail_strong_reject> mode=<dspy-base | dspy-json>
 ```
