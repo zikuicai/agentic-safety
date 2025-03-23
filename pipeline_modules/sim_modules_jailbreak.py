@@ -17,7 +17,7 @@ class Orchestrator(dspy.Module):
         self.logger = logger
         self.predictor = dspy.ChainOfThought("input: str -> is_safe: bool, reasoning: str")
 
-    def forward(self, input: str) -> bool:
+    def forward(self, input: str) -> Tuple[bool, str]:
         """
         Determines if input is harmful or not, try to avoid false refusal
         """
@@ -150,7 +150,7 @@ class Evaluator(dspy.Module):
         self.logger = logger
         self.filter = dspy.ChainOfThought("input: str -> is_safe: bool, reasoning: str")
 
-    def forward(self, response: str) -> tuple:
+    def forward(self, response: str) -> Tuple[bool, str]:
         unsafe_subject = self.config.unsafe_subject
         unsafe_text = self.config[unsafe_subject]
 
