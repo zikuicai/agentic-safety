@@ -21,10 +21,10 @@ fi
 
 wait_for_llm() {
   while ! nc -z localhost $BASE_PORT; do
-    echo "Waiting for vLLM to come online..."
+    echo "Waiting for LLM API to come online..."
     sleep 5
   done
-  echo "vLLM is online."
+  echo "LLM API is online."
 }
 wait_for_llm
 
@@ -37,7 +37,7 @@ for mode in "${MODES[@]}"; do
 
   datetime_str=$(date '+%Y-%m-%d_%H-%M-%S' | tr ' ' '-' | tr ':' '-')
   log_file="$(date +%s)-${run}-${mode}-p${port}-${datetime_str}.log"
-  logs_dir=$(pwd)/logs1/${run}_${mode}/${model_name_for_logs}
+  logs_dir=$(pwd)/logs/${run}_${mode}/${model_name_for_logs}
   mkdir -p $logs_dir
   echo "Logging to $logs_dir/$log_file"
 
