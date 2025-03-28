@@ -34,13 +34,15 @@ class Agent:
         params = {
             "custom_llm_provider": self._model_provider,
             "model": self._model_name,
-            "api_base": self.api_base,
             "temperature": self.temperature,
             "messages": messages,
             "extra_body": {  # OpenAI python accepts extra args in extra_body
                 "cache": {"use-cache": self.use_cache}
             },
         }
+        if self.api_base:
+            params["api_base"] = self.api_base
+
         if use_output_schema and self.output_schema is not None:
             params["response_format"] = self.output_schema
 
