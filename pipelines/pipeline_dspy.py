@@ -3,7 +3,8 @@ import os
 
 import dspy
 
-from pipeline_modules.sim_modules_unlearning import Orchestrator, QuestionAnalyzer, InputSanitizer, Responder, DictResponder, \
+from pipeline_modules.sim_modules_unlearning import Orchestrator, QuestionAnalyzer, InputSanitizer, Responder, \
+    DictResponder, \
     Deflector, \
     Evaluator
 from pipelines.pipeline_abs import Pipeline
@@ -165,8 +166,9 @@ class DSpyPipeline(Pipeline):
         self.logger.debug(f"Sanitized input: {sanitized_input}")
 
         # Step 3: Check if topic-related
-        is_topic_related = self.orchestrator(sanitized_input)
+        is_topic_related, orchestrator_reasoning = self.orchestrator(sanitized_input)
         self.logger.debug(f"Is topic related: {is_topic_related}")
+        self.logger.debug(f"Orchestrator reasoning: {orchestrator_reasoning}")
 
         if is_topic_related:
             self.stats['topic_related'] += 1
