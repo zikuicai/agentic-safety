@@ -14,7 +14,7 @@ def optimize_orchestrator(orchestrator: Orchestrator, logger: logging.Logger, ds
                           dspy_valset, autorun_mode: str) -> Orchestrator:
     # Define accuracy metric
     def accuracy_metric(gold, pred, trace=None):
-        match = gold.is_related.lower() == str(pred).lower()
+        match = gold.is_related.lower() == str(pred[0]).lower()
         if not match:
             logger.error(f"Prediction mismatch - Gold: {gold}, Pred: {pred}")
         return match
@@ -122,9 +122,9 @@ class DSpyPipeline(Pipeline):
             'deflections': 0,
         }
 
-        # Optimize the topic detector
-        if cfg.enable_dspy_optimization == True:
-            self.run_optimize(force_retrain=False)
+        # # Optimize the topic detector
+        # if cfg.enable_dspy_optimization == True:
+        #     self.run_optimize(force_retrain=False)
 
     def run_optimize(self, force_retrain):
         self.orchestrator = optimize_orchestrator_once(self.orchestrator, self.dspy_trainset,

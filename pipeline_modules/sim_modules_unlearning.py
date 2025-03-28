@@ -32,6 +32,7 @@ class Orchestrator(dspy.Module):
 
         {unsafe_subject}: {unsafe_values}
 
+        \n\n
         Input:\n{input_text}
         """
 
@@ -170,6 +171,7 @@ class Evaluator(dspy.Module):
 
         {unsafe_subject} to check: {unsafe_values}
         
+        \n\n
         =========== START OF INPUT PROMPT ===========
         
         {input_text}
