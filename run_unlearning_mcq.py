@@ -73,7 +73,7 @@ def run_pipeline(pipeline, testset, logger, answers_file_path, is_dspy, max_work
                     print(Fore.RED + f"Q_{idx} is Incorrect!" + Style.RESET_ALL)
 
                 total_questions = pipeline.stats['total_questions']
-                flagged_questions = pipeline.stats['topic_related']
+                flagged_questions = pipeline.stats['flagged_stage1']
                 print(
                     Fore.YELLOW + f"Accuracy = {num_correct}/{total_questions} = {num_correct / total_questions * 100:.2f}%" + Style.RESET_ALL)
                 print(
@@ -101,7 +101,6 @@ def main(cfg) -> None:
 
     logger.info(f"Using configuration: {cfg}")
 
-
     is_dspy = False
     if str(cfg.mode).startswith('prompting'):
         from pipelines.pipeline_prompting import RegularPipeline
@@ -121,9 +120,10 @@ def main(cfg) -> None:
         cfg.model.dspy_optimized_file = os.path.join(cfg.model.dspy_optimized_dir, cfg.model.dspy_optimized_file)
         assert os.path.exists(
             cfg.model.dspy_optimized_file), f"DSpy optimization file must exist. Not found: {cfg.model.dspy_optimized_file}"
-        logger.info(f"Using optimized topic detector from: {cfg.model.dspy_optimized_file}")
+        logger.info(f"Optimized topic detector to be used: {cfg.model.dspy_optimized_file}")
         from pipelines.pipeline_dspy import DSpyPipeline
         pipeline = DSpyPipeline(cfg, logger, dspy_datasets=None)
+        pipeline.run_optimize(do_retrain=False)  # Only load the optimized orchestrator
         is_dspy = True
     elif cfg.mode == 'dspy-base':
         # Using the dspy framework but not using the optimized detector
@@ -153,6 +153,9 @@ def main(cfg) -> None:
     # Run solver
     logger.info(f"Solving for {cfg.data.data.name} with {len(testset)} questions.")
     run_pipeline(pipeline, testset, logger, answers_file_path, is_dspy, cfg.max_workers)
+
+    logger.info(f"Results saved to: {answers_file_path}")
+    logger.info(f"Run complete.")
 
 
 if __name__ == "__main__":

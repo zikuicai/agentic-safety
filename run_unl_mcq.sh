@@ -4,8 +4,10 @@ BASE_PORT=11110
 
 RUNS=("wmdp_chem" "wmdp_bio" "wmdp_cyber" "mmlu")
 
-MODES=("base" "prompting" "filtering" "dspy-base" "dspy-json")
-CUDA_DEVICES="0,1,2,3"
+#MODES=("base" "prompting" "filtering" "dspy-base" "dspy-json")
+#MODES=("dspy-base")
+MODES=("dspy-json")
+CUDA_DEVICES="0,1,2,3,4,5,6,7"
 
 PIDS=()
 
