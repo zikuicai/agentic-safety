@@ -95,7 +95,7 @@ You must choose mode based on your experimental setup.
 ```sh
 python3 run_unlearning_mcq.py +data=<wmdp_cyber | wmdp_bio | wmdp_chem | mmlu> +defense=unl_wmdp mode=<base | prompting | filtering | dspy-base | dspy-json>
 ```
-
+**Note:** Please also check out the file `run_unl_mcq.sh` for an example of how this script can be used in practice in a bash-script. 
 #### MT_Bench
 
 You must choose mode based on your experimental setup. Note that for our experiments, we only use MT-bench along with
