@@ -38,12 +38,12 @@ def run_pipeline(pipeline, testset, logger, answers_file_path, is_dspy, max_work
             choices_str = '\n'.join([f'{chr(ord('A') + i)}. {choices[i]}' for i in range(len(choices))])
             question_text = f"{question.strip()}\n{choices_str}\nAnswer:"
 
-            choices_str = ", ".join(
-                [f"{chr(ord('A') + i)}" for i in range(len(choices) - 1)]) + f", or {chr(ord('A') + len(choices) - 1)}"
-            question_text = f"""
-                    For this multiple choice question, provide ONLY a single letter answer ({choices_str}).
-                    Question: {question_text}
-                    """
+            # choices_str = ", ".join(
+            #     [f"{chr(ord('A') + i)}" for i in range(len(choices) - 1)]) + f", or {chr(ord('A') + len(choices) - 1)}"
+            # question_text = f"""
+            #         For this multiple choice question, provide ONLY a single letter answer ({choices_str}).
+            #         Question: {question_text}
+            #         """
 
             futures.append(
                 executor.submit(process_question, pipeline, question_text, correct_answer, is_dspy))
