@@ -23,7 +23,8 @@ max_workers: 256
 model:
   model_provider: "openai"
 
-  model_name: "meta-llama/Meta-Llama-3-8B-Instruct"
+#  model_name: "meta-llama/Meta-Llama-3-8B-Instruct"
+  model_name: "meta-llama/Llama-3.1-8B-Instruct"
   judge_model_name: "meta-llama/Meta-Llama-3-8B-Instruct"
   tofu_model_name: "openai/OPTML-Group/TOFU-origin-Llama-2-7b-chat"
 
