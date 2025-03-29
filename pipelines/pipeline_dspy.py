@@ -12,16 +12,34 @@ from pipelines.pipeline_abs import Pipeline
 
 def optimize_orchestrator(orchestrator: Orchestrator, logger: logging.Logger, dspy_trainset,
                           dspy_valset, autorun_mode: str) -> Orchestrator:
-    # Define accuracy metric
-    def accuracy_metric(gold, pred, trace=None):
-        match = gold.is_related.lower() == str(pred[0]).lower()
-        if not match:
-            logger.error(f"Prediction mismatch - Gold: {gold}, Pred: {pred}")
-        return match
+
+    def orchestrator_safety_metric(gold, pred, trace=None):
+        logger.debug(f"Pred: {pred}")
+        is_safe, reasoning = pred
+        logger.debug(f"is_safe: {is_safe}, ")
+        predicted_safe = str(is_safe).lower() == 'true'
+        actual_safe = gold.is_safe.lower() == 'true'
+
+        if predicted_safe != actual_safe:
+            logger.error(f"Safety mismatch - Gold: {predicted_safe}, Pred: {actual_safe}")
+
+        # Calculate precision and recall-oriented scores
+        false_positives = not predicted_safe and actual_safe
+        false_negatives = predicted_safe and not actual_safe
+
+        # Penalize false negatives more heavily than false positives
+        if false_negatives:
+            score = 0.0  # Critical failure - letting unsafe content through
+        elif false_positives:
+            score = 0.3  # Suboptimal but not critical - being too conservative
+        else:
+            score = 1.0  # Perfect match
+
+        return score
 
     # Create optimizer
     optimizer = dspy.MIPROv2(
-        metric=accuracy_metric,
+        metric=orchestrator_safety_metric,
         num_threads=256,
         auto=autorun_mode
     )
@@ -33,17 +51,19 @@ def optimize_orchestrator(orchestrator: Orchestrator, logger: logging.Logger, ds
         valset=dspy_valset,
         requires_permission_to_run=False,
     )
-    dspy.inspect_history()
 
+    dspy.inspect_history()
     return optimized_detector
 
 
 def optimize_orchestrator_once(orchestrator: Orchestrator, dspy_trainset, dspy_valset, logger: logging.Logger,
-                               optimized_file, MIPRO_autorun_mode: str, force_retrain=False) -> Orchestrator:
-    optimized_detector = orchestrator
-    if not force_retrain and os.path.exists(optimized_file):
+                               optimized_file, MIPRO_autorun_mode: str, do_retrain=False) -> Orchestrator:
+    optimized_detector = None
+    if not do_retrain:
+        assert os.path.exists(optimized_file), f"Optimized file must exist: {optimized_file}"
+        optimized_detector = orchestrator
         optimized_detector.load(optimized_file)
-        logger.info(f"Using optimized Orchestrator from: {optimized_file}")
+        logger.info(f"Loaded optimized Orchestrator from: {optimized_file}")
     else:
         assert dspy_trainset is not None and dspy_valset is not None, "Training and validation sets must not be None."
 
@@ -84,7 +104,6 @@ class DSpyPipeline(Pipeline):
             self.dspy_valset = dspy_datasets[1]
 
         self.unlearning_config = cfg.defense
-        # Detects whether the input is related to the unlearning topics to be randomly responded to or not
         self.orchestrator = Orchestrator(self.unlearning_config, logger=self.logger)
 
         # Sanitizes the user input from any prompt injection or system behavior override attacks
@@ -106,7 +125,6 @@ class DSpyPipeline(Pipeline):
             self.responder = DictResponder(response_dict=self.responder_lm_conf['responses_dict'],
                                            logger=self.logger)
 
-        # The random responder that provides safe responses for unlearning-topic-related queries
         self.deflector = Deflector(self.unlearning_config, seed=cfg.seed, logger=self.logger)
 
         # The final response filterer providing a safer gateway for the final responses out of the system
@@ -115,40 +133,66 @@ class DSpyPipeline(Pipeline):
         # Statistics tracking
         self.stats = {
             'total_questions': 0,
-            'topic_related': 0,
+            'failed_queries': 0,
+            'flagged_stage1': 0,
+            'flagged_stage2': 0,
+            'deflections': 0,
+            'correct_answers': 0,
             'multiple_choice': 0,
             'free_form': 0,
             'choices_made': {choice: 0 for choice in self.unlearning_config.mcq_choices},
-            'deflections': 0,
+            'retry_reasons': [],
         }
 
-        # # Optimize the topic detector
-        # if cfg.enable_dspy_optimization == True:
-        #     self.run_optimize(force_retrain=False)
-
-    def run_optimize(self, force_retrain):
+    def run_optimize(self, do_retrain):
         self.orchestrator = optimize_orchestrator_once(self.orchestrator, self.dspy_trainset,
                                                        self.dspy_valset, self.logger,
                                                        self.cfg.model.dspy_optimized_file,
                                                        self.cfg.model.dspy_MIPRO_autorun_mode,
-                                                       force_retrain=force_retrain)
+                                                       do_retrain=do_retrain)
 
-    def run(self, input_text: str) -> str:
+    def run(self, input: str) -> str:
         """
         Process user input and return safe response
 
         Args:
-            input_text: Raw user input
+            input: Raw user input
             max_attempts: Maximum number of attempts to generate safe response
 
         Returns:
             Safe response string
         """
-        self.stats['total_questions'] += 1
 
         # Step 1: Analyze question type
-        question_type, choices = self.question_analyzer(input_text)
+        question_type, choices = self.question_analyzer(input)
         self.logger.debug(f"Question type: {question_type}")
+
+        is_safe, orchestrator_reason = self.orchestrator(input)
+        self.logger.debug(f"Is input safe: {is_safe}")
+        self.logger.debug(f"Orchestrator reasoning: {orchestrator_reason}")
+
+
+        self.stats['total_questions'] += 1
+        if not is_safe:
+            self.stats['flagged_stage1'] += 1
+            response = self.deflector(input, question_type)
+            self.stats['deflections'] += 1
+        else:
+            if isinstance(self.responder, DictResponder):
+                response = self.responder(input)
+            else:
+                with dspy.context(lm=self.responder_lm):
+                    response = self.responder(input, question_type)
+
+            # Validate and filter response
+            if question_type != "multiple_choice":
+                is_safe, filter_reason = self.evaluator(input, response)
+                self.logger.debug(f"Is response safe: {is_safe}")
+                self.logger.debug(f"Response_filter reasoning: {filter_reason}")
+                if not is_safe:
+                    self.stats['flagged_stage2'] += 1
+                    response = self.deflector(input, question_type)
+                    self.stats['deflections'] += 1
 
         # Update type statistics
         if question_type == "multiple_choice":
@@ -156,39 +200,7 @@ class DSpyPipeline(Pipeline):
         else:
             self.stats['free_form'] += 1
 
-        # Step 2: Sanitize input if needed
-        if question_type == "multiple_choice":
-            sanitized_input = input_text
-        else:
-            # Temporarily disabled
-            sanitized_input = input_text
-
-        self.logger.debug(f"Sanitized input: {sanitized_input}")
-
-        # Step 3: Check if topic-related
-        is_topic_related, orchestrator_reasoning = self.orchestrator(sanitized_input)
-        self.logger.debug(f"Is topic related: {is_topic_related}")
-        self.logger.debug(f"Orchestrator reasoning: {orchestrator_reasoning}")
-
-        if is_topic_related:
-            self.stats['topic_related'] += 1
-            response = self.deflector(sanitized_input, question_type)
-        else:
-            if isinstance(self.responder, DictResponder):
-                response = self.responder(sanitized_input)
-            else:
-                with dspy.context(lm=self.responder_lm):
-                    response = self.responder(sanitized_input, question_type)
-
-            # Validate and filter response
-            if question_type != "multiple_choice":
-                is_safe, reason = self.evaluator(sanitized_input, response)
-                if not is_safe:
-                    response = self.deflector(sanitized_input, question_type)
-
-        # Update statistics
         if question_type == "multiple_choice":
             self.stats['choices_made'][response] += 1
-        elif response == self.unlearning_config.refusal_message:
-            self.stats['deflections'] += 1
+
         return response

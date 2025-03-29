@@ -5,7 +5,7 @@ from typing import Tuple, Optional, Dict
 import dspy
 
 from pipeline_modules.custom_predict import CustomPredict
-from pipeline_modules.signatures import OrchestratorSignature, GeneratorSignature
+from pipeline_modules.signatures import GeneratorSignature
 
 
 class Orchestrator(dspy.Module):
@@ -16,13 +16,13 @@ class Orchestrator(dspy.Module):
         self.config = config
         self.logger = logger
 
-        self.predictor = dspy.Predict(OrchestratorSignature)
+        self.predictor = dspy.ChainOfThought("input: str -> is_safe: bool, reasoning: str")
 
-    def forward(self, input_text: str) -> Tuple[bool, str]:
+    def forward(self, input: str) -> Tuple[bool, str]:
         """
         Determines if input is related to unlearning topic
-        Returns: True if related, False if unrelated
         """
+
         unsafe_subject = self.config.unsafe_subject
         unsafe_values = self.config[unsafe_subject]
 
@@ -32,12 +32,12 @@ class Orchestrator(dspy.Module):
 
         {unsafe_subject}: {unsafe_values}
 
-        \n\n
-        Input:\n{input_text}
+        Input: {input}
+        Return "True" for is_safe if the input is not related, "False" if related
         """
 
-        result = self.predictor(input_text=prompt)
-        return result.is_related, result.reasoning
+        result = self.predictor(input=prompt)
+        return result.is_safe, result.reasoning
 
 
 class QuestionAnalyzer(dspy.Module):

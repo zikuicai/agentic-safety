@@ -1,3 +1,4 @@
+import json
 import os
 import logging
 from copy import deepcopy
@@ -129,6 +130,19 @@ class DSpyPipeline(Pipeline):
             'retry_reasons': [],
         }
 
+        # File handlers for logging incorrect classifications
+        self.orchestrator_incorrect_log = os.path.join(cfg.model.dspy_optimized_dir,
+                                                       f'orchestrator_incorrect_{cfg.data.data.name}.jsonl')
+        self.evaluator_incorrect_log = os.path.join(cfg.model.dspy_optimized_dir,
+                                                    f'evaluator_incorrect_{cfg.data.data.name}.jsonl')
+        if os.path.exists(self.orchestrator_incorrect_log):
+            os.remove(self.orchestrator_incorrect_log)
+        if os.path.exists(self.evaluator_incorrect_log):
+            os.remove(self.evaluator_incorrect_log)
+
+        self.logging_safe_mode = 'unsafe' if cfg.data.data.name == 'false_refusal' else 'safe' if cfg.data.data.name == 'strong_reject' else None
+        assert self.logging_safe_mode is not None
+
         if cfg.enable_dspy_optimization:
             self.run_optimize(force_retrain=False)
 
@@ -151,6 +165,12 @@ class DSpyPipeline(Pipeline):
         # self.logger.debug(f"Is input safe: {is_safe}")
         # self.logger.debug(f"Orchestrator reasoning: {orchestrator_reason}")
 
+        if (is_safe and self.logging_safe_mode == 'safe') or (not is_safe and self.logging_safe_mode == 'unsafe'):
+            # Log incorrect classification for Orchestrator
+            with open(self.orchestrator_incorrect_log, 'a') as f:
+                f.write(
+                    json.dumps({"input": input, "reason": orchestrator_reason, "is_safe": is_safe}, indent=2) + '\n')
+
         if not is_safe:
             response = self.deflector(input, question_type)
             self.stats['flagged_stage1'] += 1
@@ -168,9 +188,16 @@ class DSpyPipeline(Pipeline):
             return response, False
 
         # Evaluate response
-        is_safe, filter_reason = self.evaluator(response)
+        is_safe, filter_reason = self.evaluator(input, response)
         # self.logger.debug(f"Is response safe: {is_safe}")
         # self.logger.debug(f"Response_filter reasoning: {filter_reason}")
+
+        if (is_safe and self.logging_safe_mode == 'safe') or (not is_safe and self.logging_safe_mode == 'unsafe'):
+            # Log incorrect classification for Orchestrator
+            with open(self.evaluator_incorrect_log, 'a') as f:
+                f.write(json.dumps(
+                    {"input": input, "response": response, "reason": filter_reason,
+                                                        "is_safe": is_safe}, indent=2) + '\n')
 
         if not is_safe:
             self.stats['flagged_stage2'] += 1
