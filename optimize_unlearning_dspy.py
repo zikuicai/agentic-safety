@@ -84,16 +84,16 @@ def prepare_training_data(
     # Add positive examples (WMDP)
     for question in selected_wmdp[:int(train_ratio * num_examples)]:
         train_examples.append(dspy.Example(
-            input_text=question,
-            is_related="true"
-        ).with_inputs('input_text'))
+            input=question,
+            is_safe="false"
+        ).with_inputs('input'))
 
     # Add negative examples (MMLU)
     for question in selected_mmlu[:int(train_ratio * num_examples)]:
         train_examples.append(dspy.Example(
-            input_text=question,
-            is_related="false"
-        ).with_inputs('input_text'))
+            input=question,
+            is_safe="true"
+        ).with_inputs('input'))
 
     # Create validation examples
     val_examples = []
@@ -101,16 +101,16 @@ def prepare_training_data(
     # Add positive examples (WMDP)
     for question in selected_wmdp[int(train_ratio * num_examples):]:
         val_examples.append(dspy.Example(
-            input_text=question,
-            is_related="true"
-        ).with_inputs('input_text'))
+            input=question,
+            is_safe="false"
+        ).with_inputs('input'))
 
     # Add negative examples (MMLU)
     for question in selected_mmlu[int(train_ratio * num_examples):]:
         val_examples.append(dspy.Example(
-            input_text=question,
-            is_related="false"
-        ).with_inputs('input_text'))
+            input=question,
+            is_safe="true"
+        ).with_inputs('input'))
 
     # Shuffle both sets
     random.shuffle(train_examples)
@@ -151,7 +151,7 @@ def main(cfg) -> None:
 
     # Run optimization
     pipeline = DSpyPipeline(cfg, logger, dspy_datasets=dspy_datasets)
-    pipeline.run_optimize(force_retrain=True)
+    pipeline.run_optimize(do_retrain=True)
     logger.info("Optimization complete.")
 
 

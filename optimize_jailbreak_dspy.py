@@ -121,6 +121,11 @@ def prepare_evaluator_training_ds(pipeline: DSpyPipeline, input_ds: tuple, logge
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
         with open(save_path, 'wb') as f:
             pickle.dump((transformed_trainset, transformed_valset), f)
+
+    # Remove the 'input' field from the examples for the current implementation (not used as input to the Evaluator DSPy module)
+    # transformed_trainset = [dspy.Example(response=example.response, is_safe=example.is_safe).with_inputs('response') for example in transformed_trainset]
+    # transformed_valset = [dspy.Example(response=example.response, is_safe=example.is_safe).with_inputs('response') for example in transformed_valset]
+
     return transformed_trainset, transformed_valset
 
 
@@ -138,7 +143,6 @@ def main(cfg) -> None:
     pipeline = DSpyPipeline(cfg, logger)
 
     # Dynamically set the path for optimized
-    benchmark = cfg.data.data.name
     cfg.model.dspy_optimized_file_orchestrator = os.path.basename(
         cfg.model.model_name) + f'-orchestrator' + cfg.model.dspy_optimized_file_postfix
     cfg.model.dspy_optimized_file_orchestrator = os.path.join(cfg.model.dspy_optimized_dir,
@@ -151,7 +155,7 @@ def main(cfg) -> None:
 
     cfg.model.evaluator_optimization_datasets_file = os.path.basename(
         cfg.model.model_name) + f'-evaluator' + cfg.model.dspy_dataset_file_postfix
-    cfg.model.evaluator_optimization_datasets_file = os.path.join(cfg.model.dspy_optimized_dir,
+    cfg.model.evaluator_optimization_datasets_file = os.path.join(cfg.model.dspy_optimized_common_dir,
                                                                   cfg.model.evaluator_optimization_datasets_file)
 
     # Prepare the training and validation data for the Orchestrator optimization
@@ -176,17 +180,15 @@ def main(cfg) -> None:
     os.makedirs(cfg.model.dspy_optimized_dir, exist_ok=True)
     cfg.enable_dspy_optimization = True
     initialization_time = str(time.time()).split('.')[0]
-    logger.info(f"Using Orchestrator DSPy optimization file: {cfg.model.dspy_optimized_file_orchestrator}")
     if os.path.exists(cfg.model.dspy_optimized_file_orchestrator):
         os.rename(cfg.model.dspy_optimized_file_orchestrator,
                   cfg.model.dspy_optimized_file_orchestrator + '.bac' + initialization_time)
-        logger.info(f"Using optimized Orchestrator from: {cfg.model.dspy_optimized_file_orchestrator}")
+        logger.info(f"Copied existing optimization file for Orchestrator to: {cfg.model.dspy_optimized_file_orchestrator + '.bac' + initialization_time}")
 
-    logger.info(f"Using Evaluator DSPy optimization file: {cfg.model.dspy_optimized_file_evaluator}")
     if os.path.exists(cfg.model.dspy_optimized_file_evaluator):
         os.rename(cfg.model.dspy_optimized_file_evaluator,
                   cfg.model.dspy_optimized_file_evaluator + '.bac' + initialization_time)
-        logger.info(f"Using optimized Evaluator from: {cfg.model.dspy_optimized_file_evaluator}")
+        logger.info(f"Copied existing optimization file for Evaluator to: {cfg.model.dspy_optimized_file_evaluator + '.bac' + initialization_time}")
 
     pipeline.run_optimize(force_retrain=True)
     logger.info("Optimization complete.")
