@@ -20,7 +20,7 @@ class Orchestrator(dspy.Module):
 
     def forward(self, input: str) -> Tuple[bool, str]:
         """
-        Determines if input is related to unlearning topic
+        Determines if input is related to the unlearning topic
         """
 
         unsafe_subject = self.config.unsafe_subject

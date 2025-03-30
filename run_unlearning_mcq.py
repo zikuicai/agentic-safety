@@ -73,7 +73,7 @@ def run_pipeline(pipeline, testset, logger, answers_file_path, is_dspy, max_work
                     print(Fore.RED + f"Q_{idx} is Incorrect!" + Style.RESET_ALL)
 
                 total_questions = pipeline.stats['total_questions']
-                flagged_questions = pipeline.stats['flagged_stage1']
+                flagged_questions = pipeline.stats['deflections']
                 print(
                     Fore.YELLOW + f"Accuracy = {num_correct}/{total_questions} = {num_correct / total_questions * 100:.2f}%" + Style.RESET_ALL)
                 print(
