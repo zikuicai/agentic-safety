@@ -6,7 +6,8 @@ RUNS=("wmdp_chem" "wmdp_bio" "wmdp_cyber" "mmlu")
 
 #MODES=("base" "prompting" "filtering" "dspy-base" "dspy-json")
 #MODES=("dspy-base")
-MODES=("dspy-json")
+MODES=("dspy-base" "dspy-json")
+
 CUDA_DEVICES="0,1,2,3,4,5,6,7"
 
 PIDS=()
@@ -40,7 +41,7 @@ for run in "${RUNS[@]}"; do
     echo "Logging to $logs_dir/$log_file"
 
     api_base="http://localhost:$BASE_PORT/v1"
-    CUDA_VISIBLE_DEVICES=$CUDA_DEVICES python run_unlearning_mcq.py +data=$run +defense=unl_wmdp mode=$mode model.model_name=$MODEL model.api_base=$api_base > $logs_dir/$log_file 2>&1 &
+    CUDA_VISIBLE_DEVICES=$CUDA_DEVICES python run_unlearning_mcq.py +data=$run +defense=unl_wmdp mode=$mode model.model_name=$MODEL > $logs_dir/$log_file 2>&1 &
     pid=$!
     PIDS+=($pid)
     echo "Started process for ${run} with mode ${mode} and PID $pid"
