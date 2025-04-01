@@ -35,7 +35,7 @@ def run_pipeline(pipeline, testset, logger, answers_file_path, is_dspy, max_work
             correct_answer = chr(ord('A') + testset[idx]['answer'])
             assert isinstance(correct_answer, str), f"Unsupported answer type: {correct_answer}"
 
-            choices_str = '\n'.join([f'{chr(ord('A') + i)}. {choices[i]}' for i in range(len(choices))])
+            choices_str = '\n'.join([f"{chr(ord('A') + i)}. {choices[i]}" for i in range(len(choices))])
             question_text = f"{question.strip()}\n{choices_str}\nAnswer:"
 
             choices_str = ", ".join(
@@ -72,7 +72,8 @@ def run_pipeline(pipeline, testset, logger, answers_file_path, is_dspy, max_work
                 else:
                     print(Fore.RED + f"Q_{idx} is Incorrect!" + Style.RESET_ALL)
 
-                total_questions = pipeline.stats['total_questions']
+                # total_questions = pipeline.stats['total_questions']
+                total_questions = idx + 1
                 flagged_questions = pipeline.stats['topic_related']
                 print(
                     Fore.YELLOW + f"Accuracy = {num_correct}/{total_questions} = {num_correct / total_questions * 100:.2f}%" + Style.RESET_ALL)
@@ -100,7 +101,6 @@ def main(cfg) -> None:
     cfg.defense[cfg.defense.unsafe_subject] = unsafe_text
 
     logger.info(f"Using configuration: {cfg}")
-
 
     is_dspy = False
     if str(cfg.mode).startswith('prompting'):
