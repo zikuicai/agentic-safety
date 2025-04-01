@@ -124,6 +124,7 @@ def main(cfg) -> None:
         logger.info(f"Using optimized topic detector from: {cfg.model.dspy_optimized_file}")
         from pipelines.pipeline_dspy import DSpyPipeline
         pipeline = DSpyPipeline(cfg, logger, dspy_datasets=None)
+        pipeline.run_optimize(do_retrain=False)  # Only load the optimized orchestrator
         is_dspy = True
     elif cfg.mode == 'dspy-base':
         # Using the dspy framework but not using the optimized detector

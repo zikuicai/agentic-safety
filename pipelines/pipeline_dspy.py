@@ -39,11 +39,13 @@ def optimize_orchestrator(orchestrator: Orchestrator, logger: logging.Logger, ds
 
 
 def optimize_orchestrator_once(orchestrator: Orchestrator, dspy_trainset, dspy_valset, logger: logging.Logger,
-                               optimized_file, MIPRO_autorun_mode: str, force_retrain=False) -> Orchestrator:
-    optimized_detector = orchestrator
-    if not force_retrain and os.path.exists(optimized_file):
+                               optimized_file, MIPRO_autorun_mode: str, do_retrain=False) -> Orchestrator:
+    optimized_detector = None
+    if not do_retrain:
+        assert os.path.exists(optimized_file), f"Optimized file must exist: {optimized_file}"
+        optimized_detector = orchestrator
         optimized_detector.load(optimized_file)
-        logger.info(f"Using optimized Orchestrator from: {optimized_file}")
+        logger.info(f"Loaded optimized Orchestrator from: {optimized_file}")
     else:
         assert dspy_trainset is not None and dspy_valset is not None, "Training and validation sets must not be None."
 
@@ -122,16 +124,12 @@ class DSpyPipeline(Pipeline):
             'deflections': 0,
         }
 
-        # # Optimize the topic detector
-        # if cfg.enable_dspy_optimization == True:
-        #     self.run_optimize(force_retrain=False)
-
-    def run_optimize(self, force_retrain):
+    def run_optimize(self, do_retrain):
         self.orchestrator = optimize_orchestrator_once(self.orchestrator, self.dspy_trainset,
                                                        self.dspy_valset, self.logger,
                                                        self.cfg.model.dspy_optimized_file,
                                                        self.cfg.model.dspy_MIPRO_autorun_mode,
-                                                       force_retrain=force_retrain)
+                                                       do_retrain=do_retrain)
 
     def run(self, input_text: str) -> str:
         """

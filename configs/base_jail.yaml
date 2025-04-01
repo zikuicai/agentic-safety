@@ -18,7 +18,7 @@ mode: null
 
 hf_cache_dir: .run/.cache/hf
 
-max_workers: 512
+max_workers: 64
 
 model:
   model_provider: "openai"
@@ -34,8 +34,9 @@ model:
   guard_model_name: "meta-llama/Llama-Guard-3-8B"
   evals_model_name: "Qwen/Qwen2.5-72B-Instruct"
 
-  api_base: http://localhost:11110/v1
-#  api_base: http://localhost:11111/v1
+#  api_base: http://localhost:11110/v1
+  api_base: http://localhost:11900/v1
+
   guard_api_base: http://localhost:11900/v1
   evals_api_base: http://localhost:11900/v1
 
@@ -46,6 +47,7 @@ model:
 
   dspy_optimized_file_postfix: "-miprov2_optimized.json"
   dspy_dataset_file_postfix: "-dspy-dataset.json"
+  dspy_optimized_common_dir: "optimized-jail-common/"
   dspy_optimized_dir: "optimized-jail-${model.dspy_MIPRO_autorun_mode}/"
   dspy_MIPRO_autorun_mode: "light"
   # Assigned dynamically at runtime (not as command line arg)

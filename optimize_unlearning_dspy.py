@@ -151,7 +151,7 @@ def main(cfg) -> None:
 
     # Run optimization
     pipeline = DSpyPipeline(cfg, logger, dspy_datasets=dspy_datasets)
-    pipeline.run_optimize(force_retrain=True)
+    pipeline.run_optimize(do_retrain=True)
     logger.info("Optimization complete.")
 
 
