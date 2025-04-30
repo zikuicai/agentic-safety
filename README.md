@@ -115,7 +115,7 @@ python3 run_unlearning_tofu.py +data=tofu +defense=unl_tofu mode=<filtering | ds
 
 ### Jailbreak Experiments
 
-For the jailbreak experiments, you need to first run Python scripts to generate the data points, which will later be _evaluated_ (see [this section](#section-id)). 
+For the jailbreak experiments, you need to first run Python scripts to generate the data points, which will later be _evaluated_ (see [Jailbreak Defense Evaluations](#jailbreak-defense-evaluations)). 
 
 #### Jailbreak Defenses
 You can use one of the following methods (each method supports :
@@ -166,6 +166,16 @@ python3 evals/strong_reject/eval_strong_reject.py --input-path <input_path> --ou
 
 This project is licensed under the MIT License. See the `LICENSE` file for more details.
 
-[//]: # (## Citations)
-
-[//]: # (TODO)
+## Citations
+Please cite our paper:
+```bibtex
+@article{cai2025aegisllmscalingagenticsystems,
+      title={AegisLLM: Scaling Agentic Systems for Self-Reflective Defense in LLM Security}, 
+      author={Zikui Cai and Shayan Shabihi and Bang An and Zora Che and Brian R. Bartoldson and Bhavya Kailkhura and Tom Goldstein and Furong Huang},
+      year={2025},
+      eprint={2504.20965},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2504.20965}, 
+}
+```
