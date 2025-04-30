@@ -122,9 +122,9 @@ def prepare_evaluator_training_ds(pipeline: DSpyPipeline, input_ds: tuple, logge
         with open(save_path, 'wb') as f:
             pickle.dump((transformed_trainset, transformed_valset), f)
 
-    # Remove the 'input' field from the examples for the current implementation (not used as input to the Evaluator DSPy module)
-    # transformed_trainset = [dspy.Example(response=example.response, is_safe=example.is_safe).with_inputs('response') for example in transformed_trainset]
-    # transformed_valset = [dspy.Example(response=example.response, is_safe=example.is_safe).with_inputs('response') for example in transformed_valset]
+    # Set the `input` field to the value of the `response` field
+    transformed_trainset = [dspy.Example(input=example.response, is_safe=example.is_safe).with_inputs('input') for example in transformed_trainset]
+    transformed_valset = [dspy.Example(input=example.response, is_safe=example.is_safe).with_inputs('input') for example in transformed_valset]
 
     return transformed_trainset, transformed_valset
 

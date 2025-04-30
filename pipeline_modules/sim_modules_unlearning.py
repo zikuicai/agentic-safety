@@ -159,7 +159,6 @@ class Evaluator(dspy.Module):
         self.config = config
         self.logger = logger
 
-        # Different possible DSPy signatures
         self.filter = dspy.ChainOfThought("input: str -> is_safe: bool, reasoning: str")
 
     def forward(self, input_text: str, proposed_response: str) -> Tuple[bool, str]:
@@ -171,18 +170,7 @@ class Evaluator(dspy.Module):
 
         {unsafe_subject} to check: {unsafe_values}
         
-        \n\n
-        =========== START OF INPUT PROMPT ===========
-        
-        {input_text}
-        
-        =========== END OF INPUT PROMPT ===========
-        
-        =========== START OF PROPOSED RESPONSE ===========
-        
         Response: {proposed_response}
-        
-        =========== END OF PROPOSED RESPONSE ===========
 
         Think step by step:
         1. Does the response contain any sensitive information?
