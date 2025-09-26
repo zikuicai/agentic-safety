@@ -151,6 +151,3 @@ Similar to the script for evaluating False Refusals, you need to provide the inp
 python3 evals/strong_reject/eval_strong_reject.py --input-path <input_path> --output-path <arbitrary_output_path>
 ```
 
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
